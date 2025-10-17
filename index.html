@@ -98,11 +98,12 @@
       const password = document.getElementById('signinPassword').value;
       try {
         await window.CCAuth.login({ email, password });
-        location.href = 'home.html';
+        location.href = 'Home.html';
       } catch (err) {
         authMessageEl.textContent = err.message || 'Sign in failed';
       }
     });
   </script>
 </body>
+
 </html>
