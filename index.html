@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Login / Signup — Campus Companion</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    /* small overrides for auth page */
+    .auth-wrap{max-width:520px;margin:40px auto;padding:24px;background:#fff;border-radius:12px;box-shadow:0 16px 40px rgba(2,6,23,0.08)}
+    .tabs{display:flex;gap:8px;margin-bottom:16px}
+    .tabs button{flex:1;padding:10px;border-radius:8px;border:1px solid #e6eefc;background:transparent;cursor:pointer}
+    .tabs button.active{background:linear-gradient(90deg,#eff6ff,#dbeafe);border-color:#93c5fd}
+    .auth-form{display:none}
+    .auth-form.active{display:block}
+    .muted{color:#6b7280;font-size:13px}
+  </style>
+</head>
+<body>
+  <main>
+    <div class="auth-wrap">
+      <h2>Campus Connect</h2>
+      <p class="muted">Sign in or create an account.</p>
+
+      <div class="tabs" role="tablist">
+        <button id="tabSignIn" class="active">Sign In</button>
+        <button id="tabSignUp">Sign Up</button>
+      </div>
+
+      <form id="signInForm" class="auth-form active">
+        <label>Email
+          <input id="signinEmail" type="email" required />
+        </label>
+        <label>Password
+          <input id="signinPassword" type="password" required />
+        </label>
+        <div class="row">
+          <button type="submit">Sign In</button>
+        </div>
+      </form>
+
+      <form id="signUpForm" class="auth-form">
+        <label>Full name
+          <input id="signupName" required />
+        </label>
+        <label>Email
+          <input id="signupEmail" type="email" required />
+        </label>
+        <label>Password
+          <input id="signupPassword" type="password" placeholder="min 6 characters" required />
+        </label>
+        <div class="row">
+          <button type="submit">Create account</button>
+        </div>
+      </form>
+
+      <div id="authMessage" style="margin-top:12px;color:#ef4444"></div>
+    </div>
+  </main>
+
+  <script type="module" src="js/auth-firebase.js"></script>
+  <script>
+    // small UI wiring for the page
+    document.getElementById('tabSignIn').addEventListener('click', () => {
+      document.getElementById('tabSignIn').classList.add('active');
+      document.getElementById('tabSignUp').classList.remove('active');
+      document.getElementById('signInForm').classList.add('active');
+      document.getElementById('signUpForm').classList.remove('active');
+    });
+    document.getElementById('tabSignUp').addEventListener('click', () => {
+      document.getElementById('tabSignUp').classList.add('active');
+      document.getElementById('tabSignIn').classList.remove('active');
+      document.getElementById('signUpForm').classList.add('active');
+      document.getElementById('signInForm').classList.remove('active');
+    });
+
+    // wire forms to auth API in js/auth.js
+    const authMessageEl = document.getElementById('authMessage');
+
+    document.getElementById('signUpForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      authMessageEl.textContent = '';
+      const name = document.getElementById('signupName').value.trim();
+      const email = document.getElementById('signupEmail').value.trim().toLowerCase();
+      const password = document.getElementById('signupPassword').value;
+      try {
+        await window.CCAuth.signup({ name, email, password });
+        location.href = 'home.html';
+      } catch (err) {
+        authMessageEl.textContent = err.message || 'Signup failed';
+      }
+    });
+
+    document.getElementById('signInForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      authMessageEl.textContent = '';
+      const email = document.getElementById('signinEmail').value.trim().toLowerCase();
+      const password = document.getElementById('signinPassword').value;
+      try {
+        await window.CCAuth.login({ email, password });
+        location.href = 'home.html';
+      } catch (err) {
+        authMessageEl.textContent = err.message || 'Sign in failed';
+      }
+    });
+  </script>
+</body>
+</html>

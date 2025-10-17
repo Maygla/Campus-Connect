@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Campus Connect — Student App</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>Campus Connect</h1>
+    <nav class="top-actions">
+      <input id="globalSearch" placeholder="Search notes, forum, news..." />
+      <!-- Auth area: updated to show login / username -->
+      <div id="authArea" style="display:flex;align-items:center;gap:8px;margin-left:8px;">
+        <!-- populated by js/auth.js -->
+        <a id="authBtn" href="index.html">Login / Signup</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="layout">
+    <aside class="sidebar">
+      <ul id="tabs">
+        <li data-tab="access" class="active">Access</li>
+        <li data-tab="notes">Notes & Study</li>
+        <li data-tab="forum">Discussion</li>
+        <li data-tab="news">News</li>
+        <li data-tab="schedule">Schedule</li>
+        <li data-tab="map">Campus Map</li>
+      </ul>
+    </aside>
+
+    <section class="content">
+      <!-- Access -->
+      <section id="access" class="tab active">
+        <h2>Quick Access</h2>
+        <p>Open common college tools from one place.</p>
+        <div class="card-grid" id="accessLinks">
+          <a href="https://portal.example.edu" target="_blank" rel="noopener">University Portal</a>
+          <a href="https://attendance.example.edu" target="_blank" rel="noopener">Attendance System</a>
+          <a href="https://library.example.edu" target="_blank" rel="noopener">Library</a>
+          <a href="https://placements.example.edu" target="_blank" rel="noopener">Placement Cell</a>
+          <a href="https://events.example.edu" target="_blank" rel="noopener">Events & Fests</a>
+          <a href="#" id="addAccessBtn">+ Add Link</a>
+        </div>
+      </section>
+
+      <!-- Notes -->
+      <section id="notes" class="tab">
+        <h2>Notes & Study Materials</h2>
+        <div class="card">
+          <form id="uploadForm">
+            <label>Subject
+              <input name="subject" id="noteSubject" placeholder="e.g., Data Structures" required />
+            </label>
+            <label>Title
+              <input name="title" id="noteTitle" placeholder="Lecture 05 - Trees" required />
+            </label>
+            <label>File
+              <input type="file" id="noteFile" required />
+            </label>
+            <div class="row">
+              <button type="submit">Upload Note</button>
+              <button type="button" id="importSampleNotes">Import Sample Notes</button>
+            </div>
+          </form>
+        </div>
+
+        <h3>Your Notes</h3>
+        <div id="notesList" class="list"></div>
+      </section>
+
+      <!-- Forum -->
+      <section id="forum" class="tab">
+        <h2>Discussion Forum</h2>
+        <div class="card">
+          <form id="postForm">
+            <input id="postAuthor" placeholder="Your name" required />
+            <input id="postTopic" placeholder="Topic (e.g., Group Project)" required />
+            <textarea id="postContent" placeholder="Write your message..." rows="4" required></textarea>
+            <div class="row">
+              <button type="submit">Post</button>
+              <button type="button" id="clearForumBtn">Clear Forum (dev)</button>
+            </div>
+          </form>
+        </div>
+
+        <div id="posts" class="list"></div>
+      </section>
+
+      <!-- News -->
+      <section id="news" class="tab">
+        <h2>News & Announcements</h2>
+        <div class="card">
+          <form id="newsForm">
+            <input id="newsTitle" placeholder="Title" required />
+            <input id="newsTag" placeholder="Tag (e.g., Placement)" />
+            <textarea id="newsBody" placeholder="Short summary" rows="3" required></textarea>
+            <div class="row">
+              <button type="submit">Publish</button>
+              <button type="button" id="clearNewsBtn">Clear News (dev)</button>
+            </div>
+          </form>
+        </div>
+
+        <div id="newsList" class="list"></div>
+      </section>
+
+      <!-- Schedule -->
+      <section id="schedule" class="tab">
+        <h2>Schedule & Events</h2>
+        <div class="card">
+          <form id="eventForm">
+            <input id="eventTitle" placeholder="Event / Class title" required />
+            <input id="eventDate" type="date" required />
+            <input id="eventTime" type="time" />
+            <select id="eventType">
+              <option value="class">Class</option>
+              <option value="exam">Exam</option>
+              <option value="event">Event</option>
+              <option value="workshop">Workshop</option>
+            </select>
+            <div class="row">
+              <button type="submit">Add</button>
+              <button type="button" id="importSampleSchedule">Import Sample</button>
+            </div>
+          </form>
+        </div>
+
+        <div id="scheduleList" class="list"></div>
+      </section>
+
+      <!-- Map -->
+      <section id="map" class="tab">
+        <h2>Interactive Campus Map</h2>
+        <p>Select start and destination and press "Navigate" to see animation.</p>
+        <div class="map-controls card">
+          <label>From
+            <select id="mapFrom"></select>
+          </label>
+          <label>To
+            <select id="mapTo"></select>
+          </label>
+          <div class="row">
+            <button id="navigateBtn">Navigate</button>
+            <button id="resetMapBtn">Reset</button>
+          </div>
+        </div>
+
+        <div class="map-wrap">
+          <!-- Inline SVG campus mockup -->
+          <svg id="campusMap" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <style>
+                .building { fill:#eee; stroke:#666; stroke-width:2 }
+                .label { font: 14px sans-serif; pointer-events:none }
+                .pathline { fill:none; stroke:#3b82f6; stroke-width:4; opacity:0.8 }
+                .pathAnim { fill:none; stroke:#06b; stroke-width:8; stroke-linecap:round; opacity:0.9 }
+              </style>
+            </defs>
+
+            <!-- Buildings -->
+            <rect id="gate" class="building" x="20" y="210" width="120" height="80" rx="8" ry="8" />
+            <text x="80" y="255" class="label" text-anchor="middle">Gate</text>
+
+            <rect id="admin" class="building" x="180" y="40" width="160" height="110" rx="8" ry="8"/>
+            <text x="260" y="95" class="label" text-anchor="middle">Admin</text>
+
+            <rect id="library" class="building" x="480" y="40" width="160" height="110" rx="8" ry="8"/>
+            <text x="560" y="95" class="label" text-anchor="middle">Library</text>
+
+            <rect id="lecture" class="building" x="160" y="220" width="220" height="120" rx="8" ry="8"/>
+            <text x="270" y="285" class="label" text-anchor="middle">Lecture Hall</text>
+
+            <rect id="lab" class="building" x="520" y="220" width="220" height="120" rx="8" ry="8"/>
+            <text x="630" y="285" class="label" text-anchor="middle">Labs</text>
+
+            <rect id="canteen" class="building" x="330" y="370" width="140" height="80" rx="8" ry="8"/>
+            <text x="400" y="415" class="label" text-anchor="middle">Canteen</text>
+
+            <!-- Paths (hidden until used) -->
+            <g id="pathsLayer"></g>
+
+            <!-- Animated dot -->
+            <circle id="walker" r="8" fill="#ff0066" stroke="#fff" stroke-width="2" visibility="hidden"/>
+          </svg>
+        </div>
+
+        <div id="mapLegend" class="card">
+          <strong>Locations:</strong> Gate, Admin, Library, Lecture Hall, Labs, Canteen.
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <small>&copy; Campus Companion </small>
+  </footer>
+
+  <!-- Authentication script: manages login/signup and updates topbar -->
+  <script type="module" src="js/auth-firebase.js"></script>
+
+  <!-- add this in index.html (module loader for Firestore/Storage) -->
+  <script type="module" src="js/db-firebase.js"></script>
+
+  <!-- main site script -->
+  <script src="js/script.js"></script>
+</body>
+</html>
