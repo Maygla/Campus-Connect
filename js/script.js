@@ -141,7 +141,7 @@ renderAccess();
   const notesListEl = document.getElementById('notesList');
   const uploadForm = document.getElementById('uploadForm');
   const sampleNotesBtn = document.getElementById('importSampleNotes');
-
+  
   async function renderNotes() {
     if (hasDB) {
       const notes = await window.CCDB.listNotes();
@@ -151,10 +151,11 @@ renderAccess();
       }
       notesListEl.innerHTML = notes.map((n, idx) => `
         <div class="item">
-          <strong>${escapeHtml(n.title)}</strong> <small>(${escapeHtml(n.subject||'')})</small>
+          <strong>${escapeHtml(n.title)}</strong> <small>(${escapeHtml(n.subject || '')})</small>
           <div class="muted">${n.createdAt && n.createdAt.toDate ? n.createdAt.toDate().toLocaleString() : ''}</div>
           <div class="row" style="margin-top:8px">
-            <a class="btn-download" data-id="${n.id}" href="${n.url}" target="_blank"><button>Download</button></a>
+            ${n.url ? `<a class="btn-download" data-id="${n.id}" href="${n.url}" target="_blank"><button>Download</button></a>` : ''}
+            ${n.driveLink ? `<a href="${escapeHtml(n.driveLink)}" target="_blank"><button>Open Drive Link</button></a>` : ''}
             <button data-delete="${n.id}" style="background:#ef4444">Delete</button>
           </div>
         </div>
@@ -179,7 +180,8 @@ renderAccess();
           <strong>${escapeHtml(n.title)}</strong> <small>(${escapeHtml(n.subject)})</small>
           <div class="muted">${new Date(n.added).toLocaleString()}</div>
           <div class="row" style="margin-top:8px">
-            <button data-download="${idx}">Download</button>
+            ${n.data ? `<button data-download="${idx}">Download</button>` : ''}
+            ${n.driveLink ? `<a href="${escapeHtml(n.driveLink)}" target="_blank"><button>Open Drive Link</button></a>` : ''}
             <button data-delete="${idx}" style="background:#ef4444">Delete</button>
           </div>
         </div>
@@ -202,27 +204,31 @@ renderAccess();
           if (!confirm('Delete this note?')) return;
           const idx = Number(btn.dataset.delete);
           const arr = lsLoad(NOTES_KEY);
-          arr.splice(idx,1);
+          arr.splice(idx, 1);
           lsSave(NOTES_KEY, arr);
           renderNotes();
         });
       });
     }
   }
-
+  
   uploadForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const subject = document.getElementById('noteSubject').value.trim();
     const title = document.getElementById('noteTitle').value.trim();
     const fileInput = document.getElementById('noteFile');
+    const driveLink = document.getElementById('noteDriveLink').value.trim();
     const file = fileInput.files?.[0];
-    if (!file) { alert('Select a file'); return; }
-
+  
+    if (!file && !driveLink) {
+      alert('Please upload a file or provide a Drive link.');
+      return;
+    }
+  
     if (hasDB) {
-      // owner info from auth if available
       const owner = (window.CCAuth && window.CCAuth.currentUser) ? window.CCAuth.currentUser() : null;
       try {
-        await window.CCDB.uploadNote({ file, subject, title, owner });
+        await window.CCDB.uploadNote({ file, subject, title, owner, driveLink });
         uploadForm.reset();
         renderNotes();
       } catch (err) {
@@ -230,14 +236,14 @@ renderAccess();
         console.error(err);
       }
     } else {
-      // fallback: store data URL in localStorage (existing behavior)
-      const data = await readFileAsDataURL(file);
+      const data = file ? await readFileAsDataURL(file) : null;
       const arr = lsLoad(NOTES_KEY);
       arr.unshift({
-        filename: file.name,
+        filename: file?.name || null,
         subject,
         title,
         data,
+        driveLink,
         added: Date.now()
       });
       lsSave(NOTES_KEY, arr);
@@ -245,10 +251,9 @@ renderAccess();
       renderNotes();
     }
   });
-
+  
   sampleNotesBtn.addEventListener('click', async () => {
     if (hasDB) {
-      // create two tiny sample notes as plain text files in storage
       const blob1 = new Blob(["Sample note content (DSA)"], { type: 'text/plain' });
       const file1 = new File([blob1], 'DSA-lecture1.txt');
       const blob2 = new Blob(["Sample note content (Math)"], { type: 'text/plain' });
@@ -257,18 +262,33 @@ renderAccess();
         await window.CCDB.uploadNote({ file: file1, subject: 'Data Structures', title: 'Lecture 1 - Intro' });
         await window.CCDB.uploadNote({ file: file2, subject: 'Mathematics', title: 'Discrete Math Notes' });
         renderNotes();
-      } catch (e) { console.error(e); alert('Import sample failed'); }
+      } catch (e) {
+        console.error(e);
+        alert('Import sample failed');
+      }
     } else {
       const sample = [
-        {filename:'DSA-lecture1.pdf', subject:'Data Structures', title:'Lecture 1 - Intro', added:Date.now()-86400000, data: samplePDFDataURL()},
-        {filename:'Math-Discrete.pdf', subject:'Mathematics', title:'Discrete Math Notes', added:Date.now()-43200000, data: samplePDFDataURL()},
+        {
+          filename: 'DSA-lecture1.pdf',
+          subject: 'Data Structures',
+          title: 'Lecture 1 - Intro',
+          added: Date.now() - 86400000,
+          data: samplePDFDataURL()
+        },
+        {
+          filename: 'Math-Discrete.pdf',
+          subject: 'Mathematics',
+          title: 'Discrete Math Notes',
+          added: Date.now() - 43200000,
+          data: samplePDFDataURL()
+        }
       ];
       lsSave(NOTES_KEY, sample.concat(lsLoad(NOTES_KEY)));
       renderNotes();
     }
   });
-
-  function readFileAsDataURL(file){
+  
+  function readFileAsDataURL(file) {
     return new Promise((res, rej) => {
       const r = new FileReader();
       r.onload = () => res(r.result);
@@ -276,11 +296,12 @@ renderAccess();
       r.readAsDataURL(file);
     });
   }
-  function samplePDFDataURL(){
+  
+  function samplePDFDataURL() {
     const txt = "Sample note content - replace with real PDF/Docs in production.";
     return 'data:text/plain;base64,' + btoa(txt);
   }
-
+  
   renderNotes();
 
   /* ========= Discussion Forum ========= */
@@ -837,6 +858,7 @@ renderAccess();
     }
   };
 });
+
 
 
 
