@@ -1,0 +1,253 @@
+/* ---------- Color palette ---------- */
+    :root{
+      --primary:#00BFA6;      /* mint aqua */
+      --accent:#FFD166;       /* soft yellow */
+      --charcoal:#2F4F4F;     /* charcoal green-ish */
+      --bg:#FAFAFA;           /* off-white */
+      --text:#212121;         /* text dark */
+      --muted:#6b6b6b;
+      --card:#ffffff;
+      --glass: rgba(255,255,255,0.6);
+    }
+
+    /* ---------- Base ---------- */
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg, #fbfcfb 0%, #f6f7f6 100%);
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.45;
+      padding:24px;
+    }
+
+    .container{
+      max-width:1200px;
+      margin:0 auto;
+      background: transparent;
+    }
+
+    /* ---------- Header / Nav ---------- */
+    header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:24px;
+      padding:12px 0 28px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      text-decoration:none;
+      color:var(--charcoal);
+    }
+
+    /* Logo circle with cap — SVG inline style below */
+    .brand .title{
+      display:flex;
+      flex-direction:column;
+      line-height:1;
+    }
+    .brand .title .name{
+      font-weight:700;
+      font-family: "Playfair Display", serif;
+      font-size:20px;
+      letter-spacing:0.3px;
+    }
+    .brand .title .tag{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:2px;
+      font-weight:500;
+    }
+
+    nav{
+      display:flex;
+      gap:18px;
+      align-items:center;
+    }
+    nav a{
+      text-decoration:none;
+      color:var(--charcoal);
+      font-weight:600;
+      padding:6px 10px;
+      border-radius:8px;
+      transition:all .18s ease;
+    }
+    nav a:hover{background:rgba(0,0,0,0.04); transform:translateY(-2px)}
+
+    .actions{
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+    .btn{
+      border:0;
+      padding:10px 16px;
+      border-radius:10px;
+      font-weight:600;
+      cursor:pointer;
+      background:transparent;
+    }
+    .btn-primary{
+      background:linear-gradient(90deg,var(--primary), #00d3b1);
+      color:white;
+      box-shadow:0 6px 18px rgba(0,191,166,0.14);
+    }
+    .btn-ghost{
+      background:transparent;
+      color:var(--charcoal);
+      border: 1px solid rgba(47,79,79,0.08);
+    }
+
+    /* ---------- Hero ---------- */
+    .hero{
+      display:grid;
+      grid-template-columns: 1fr 460px;
+      gap:28px;
+      align-items:center;
+      padding:28px 0 40px;
+    }
+
+    .hero-card{
+      background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9));
+      border-radius:18px;
+      padding:36px;
+      box-shadow:0 10px 40px rgba(47,79,79,0.06);
+      border: 1px solid rgba(47,79,79,0.03);
+    }
+
+    .kicker{
+      display:inline-block;
+      font-size:12px;
+      font-weight:700;
+      color:var(--primary);
+      background: rgba(0,191,166,0.06);
+      padding:8px 10px;
+      border-radius:10px;
+      margin-bottom:14px;
+    }
+
+    h1{
+      margin:6px 0 12px;
+      font-family: "Playfair Display", serif;
+      font-size:44px;
+      color:var(--charcoal);
+      letter-spacing:0.2px;
+    }
+
+    p.lead{
+      margin:0 0 22px;
+      color:var(--muted);
+      font-size:15px;
+      max-width:58ch;
+    }
+
+    .hero-cta{
+      display:flex;
+      gap:12px;
+      margin-top:6px;
+    }
+
+    /* right column sample cards */
+    .hero-side{
+      display:flex;
+      gap:14px;
+      flex-direction:column;
+      align-items:stretch;
+    }
+    .pill{
+      background: linear-gradient(180deg, rgba(0,191,166,0.06), rgba(255,255,255,0.02));
+      border-radius:20px;
+      padding:16px;
+      border:1px solid rgba(47,79,79,0.03);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height:88px;
+      font-weight:700;
+      color:var(--charcoal);
+      font-size:14px;
+    }
+
+    /* ---------- Features ---------- */
+    .features{
+      margin-top:22px;
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap:18px;
+    }
+    .feature{
+      background:var(--card);
+      padding:18px;
+      border-radius:12px;
+      border:1px solid rgba(47,79,79,0.03);
+      box-shadow: 0 6px 20px rgba(47,79,79,0.03);
+    }
+    .feature h3{
+      margin:0 0 8px;
+      font-size:16px;
+      color:var(--charcoal);
+    }
+    .feature p{
+      margin:0;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    /* ---------- Highlights bar ---------- */
+    .highlights{
+      display:flex;
+      gap:14px;
+      margin:28px 0;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .chip{
+      padding:10px 12px;
+      border-radius:12px;
+      background:linear-gradient(90deg, rgba(255,209,102,0.12), rgba(0,191,166,0.06));
+      font-weight:600;
+      font-size:13px;
+      color:var(--charcoal);
+      border:1px solid rgba(0,0,0,0.03);
+    }
+
+    /* ---------- Footer ---------- */
+    footer{
+      margin-top:36px;
+      padding:22px 0 44px;
+      color:var(--muted);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    /* ---------- Utilities ---------- */
+    .muted{color:var(--muted)}
+    .small{font-size:13px}
+
+    /* ---------- Responsive ---------- */
+    @media (max-width:1000px){
+      .hero{grid-template-columns:1fr 1fr}
+      .hero h1{font-size:36px}
+    }
+
+    @media (max-width:820px){
+      .hero{grid-template-columns:1fr; padding:18px 0}
+      .hero-side{order:2}
+      .hero-card{order:1}
+      .features{grid-template-columns:1fr}
+      header{flex-direction:column; align-items:flex-start; gap:12px}
+      nav{order:2; width:100%; display:flex; justify-content:flex-start; gap:10px; flex-wrap:wrap}
+    }
+
+    /* subtle button focus */
+    .btn:focus{outline:3px solid rgba(0,191,166,0.12); outline-offset:2px}
