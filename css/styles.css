@@ -3,7 +3,7 @@
 :root{
   --bg:#f6f8fb;
   --card:#fff;
-  --accent:#2563eb;
+  --accent:#00BFA6;
   --muted:#6b7280;
   --glass: rgba(255,255,255,0.7);
 }
@@ -49,4 +49,5 @@ textarea{resize:vertical}
   .layout{flex-direction:column}
   .sidebar{width:100%;display:flex;overflow:auto}
   .sidebar ul{flex-direction:row}
+
 }
