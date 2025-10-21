@@ -645,7 +645,7 @@ async function renderAccess() {
     
     'turn3->Shakuntalam Hall': [{x:400, y:365},{x:400, y:430},{x:450, y:430}],
     'turn3->Mechanical engineering dept.': [{x:400, y:365},{x:400, y:500},{x:450, y:500},{x:450, y:530}],
-    'turn3->Civil engineering dept.': [{x:330, y:255},{x:330, y:365},{x:580, y:365},{x:580, y:415}],
+    'turn3->Civil engineering dept.': [{x:400, y:365},{x:580, y:365},{x:580, y:415}],
     
     'Shakuntalam Hall->turn4': [{x:450, y:430},{x:400, y:435},{x:400, y:500},{x:515, y:500},{x:515, y:580}],
     'Shakuntalam Hall->Mechanical engineering dept.': [{x:450, y:430},{x:400, y:435},{x:400, y:500},{x:450, y:500},{x:450, y:530}],
@@ -874,5 +874,6 @@ async function renderAccess() {
     }
   };
 });
+
 
 
