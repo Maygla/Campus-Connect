@@ -600,21 +600,27 @@ renderAccess();
     'turn3->turn4': [{x:400, y:365},{x:400, y:500},{x:515, y:500},{x:515, y:580}],
     
     'Gate->Cafeteria(Shri. krishan bhawan)': [{x:80,y:250},{x:200, y:255},{x:200, y:315}],
-    'bank->Cafeteria(Shri. krishan bhawan)': [{x:200, y:550},{x:150, y:550},{x:150, y:255},{x:200, y:255},{x:200, y:315}],
-    'Gate->bank': [{x:80,y:250},{x:150, y:255},{x:150, y:550},{x:200, y:550}],
+    // 'bank->Cafeteria(Shri. krishan bhawan)': [{x:200, y:550},{x:150, y:550},{x:150, y:255},{x:200, y:255},{x:200, y:315}],
+    // 'Gate->bank': [{x:80,y:250},{x:150, y:255},{x:150, y:550},{x:200, y:550}],
     
     'turn1->Cafeteria(Shri. krishan bhawan)': [{x:330, y:255},{x:200, y:255},{x:200, y:315}],
     'turn1->Library': [{x:330, y:255},{x:370, y:255},{x:370, y:315}],
     'turn1->Computer engineering dept.': [{x:330, y:255},{x:440, y:257},{x:440, y:315}],
     'turn1->Electrical engineering dept.': [{x:330, y:255},{x:540, y:260},{x:540, y:315}],
-    'turn1->Electrical engineering dept.': [{x:330, y:255},{x:540, y:260},{x:540, y:315}],
+    // 'turn1->Electrical engineering dept.': [{x:330, y:255},{x:540, y:260},{x:540, y:315}],
     'turn1->administravtive': [{x:330, y:255},{x:640, y:260},{x:640, y:315}],
     'turn1->V.C. OFFICE': [{x:330, y:255},{x:680, y:260},{x:680, y:325}],
     'turn1->Auditorium/Management dept.': [{x:330, y:255},{x:650, y:257},{x:650, y:230}],
     'turn1->LaLchowk': [{x:330, y:255},{x:550, y:260},{x:550, y:230}],
-    'turn1->bank': [{x:330, y:255},{x:150, y:255},{x:150, y:550},{x:200, y:550}],
+    // 'turn1->bank': [{x:330, y:255},{x:150, y:255},{x:150, y:550},{x:200, y:550}],
     
     'Auditorium/Management dept.->V.C. OFFICE': [{x:650, y:230},{x:680, y:325}],
+    'Electrical engineering dept.->V.C. OFFICE': [{x:540, y:315},{x:540, y:260},{x:680, y:260},,{x:680, y:325}],
+    'Electrical engineering dept.->Auditorium/Management dept.': [{x:540, y:315},{x:540, y:260},{x:650, y:260},,{x:650, y:230}],
+    'Computer engineering dept.->V.C. OFFICE': [{x:440, y:315},{x:440, y:260},{x:680, y:260},,{x:680, y:325}],
+    'Computer engineering dept.->Auditorium/Management dept.': [{x:440, y:315},{x:440, y:260},{x:650, y:260},,{x:650, y:230}],
+    'Library->Auditorium/Management dept.': [{x:370, y:315},{x:370, y:260},{x:650, y:260},,{x:650, y:230}],
+    'Library->V.C. OFFICE': [{x:370, y:315},{x:370, y:260},{x:680, y:260},,{x:680, y:325}],
     
     'turn2->Library': [{x:710, y:260},{x:370, y:255},{x:370, y:315}],
     'turn2->Computer engineering dept.': [{x:710, y:260},{x:440, y:257},{x:440, y:315}],
@@ -636,8 +642,8 @@ renderAccess();
     
     'turn4->CV RAMAN/Science Block': [{x:515, y:580},{x:570, y:580},{x:570, y:540}],
     'turn4->Mechanical engineering dept.': [{x:515, y:580},{x:450, y:580},{x:450, y:530}],
-    'turn4->Temple': [{x:515, y:580},{x:790, y:580},{x:790, y:560}],
-    'turn4->bank': [{x:515, y:580},{x:200, y:580},{x:200, y:550}],
+    // 'turn4->Temple': [{x:515, y:580},{x:790, y:580},{x:790, y:560}],
+    // 'turn4->bank': [{x:515, y:580},{x:200, y:580},{x:200, y:550}],
   };
 
   // --- Replacement findPath using BFS on the road graph + safe concatenation ---
@@ -858,6 +864,7 @@ renderAccess();
     }
   };
 });
+
 
 
 
