@@ -31,65 +31,42 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   const lsSave = (key, data) => localStorage.setItem(key, JSON.stringify(data));
 
-  /* ========= Access Links ========= */
 const PERSONAL_ACCESS_KEY = 'cc_personal_access_v1'; // fallback for unsigned users / no DB
-const accessLinksEl = document.getElementById('accessLinks');
+
 async function renderAccess() {
-  // fetch global + personal from Firestore (if available)
-  let allLinks = [];
-  let personalLocal = lsLoad(PERSONAL_ACCESS_KEY); // local personal fallback
+  const personalContainer = document.getElementById('personalLinksContainer');
+  if (!personalContainer) return;
 
-  if (hasDB) {
-    try {
-      allLinks = await window.CCDB.listAccessLinks(); // returns both global (owner==null) and personal (owner set)
-    } catch (e) {
-      console.error('Failed to load access links from DB', e);
-      allLinks = [];
-    }
-  } else {
-    // fallback: use stored shared links key if present otherwise seed defaults
-    let links = lsLoad(ACCESS_KEY);
-    if (links.length === 0) {
-      links = [
-        { title: 'University Portal', url: 'https://portal.example.edu', createdAt: Date.now(), owner: null },
-        { title: 'Attendance System', url: 'https://attendance.example.edu', createdAt: Date.now(), owner: null },
-        { title: 'Library', url: 'https://library.example.edu', createdAt: Date.now(), owner: null },
-        { title: 'Placement Cell', url: 'https://placements.example.edu', createdAt: Date.now(), owner: null }
-      ];
-      lsSave(ACCESS_KEY, links);
-    }
-    // adapt format to expected object shape
-    allLinks = links.map(l => ({ title: l.title, url: l.url, owner: l.owner || null }));
-  }
-
-  // separate global (owner == null) and personal (owner.uid matches current user)
+  // Determine current user if available
   const user = (window.CCAuth && window.CCAuth.currentUser) ? window.CCAuth.currentUser() : null;
-  const globalLinks = allLinks.filter(l => !l.owner);
-  let personalLinks = [];
 
-  if (hasDB) {
-    if (user) {
-      personalLinks = allLinks.filter(l => l.owner && l.owner.uid === user.uid);
-    } else {
-      // user not signed in: try local personal entries
-      personalLinks = personalLocal || [];
+  // Load personal links:
+  // - If DB available and signed-in: read all access docs and filter owner.uid == user.uid
+  // - Else use local personal storage
+  let personalLinks = [];
+  if (hasDB && user) {
+    try {
+      const all = await window.CCDB.listAccessLinks(); // returns global+personal
+      personalLinks = all.filter(l => l.owner && l.owner.uid === user.uid);
+    } catch (e) {
+      console.error('Failed to load personal links from DB', e);
+      personalLinks = [];
     }
   } else {
-    // no DB: personal entries stored locally
-    personalLinks = personalLocal || [];
+    personalLinks = lsLoad(PERSONAL_ACCESS_KEY) || [];
   }
 
-  // Build HTML: global first, then personal
-  const globalHtml = globalLinks.map(l => `<a href="${escapeHtml(l.url)}" target="_blank">${escapeHtml(l.title)}</a>`).join('');
-  let personalHtml = '';
-  if (personalLinks.length === 0) {
-    personalHtml = `<div class="item muted">No personal links. Add one below.</div>`;
+  // Render personal links area
+  if (!personalLinks.length) {
+    personalContainer.innerHTML = `<div class="item muted">No personal links. Add one below.</div>`;
   } else {
-    personalHtml = personalLinks.map((l, idx) => {
-      // if stored locally it may not have id; use idx as fallback
+    personalContainer.innerHTML = personalLinks.map((l, idx) => {
+      // if Firestore doc it will have l.id, else local items rely on index
       const idAttr = l.id ? `data-id="${l.id}"` : `data-local-idx="${idx}"`;
+      const title = escapeHtml(l.title || l.title === 0 ? l.title : 'Untitled');
+      const url = escapeHtml(l.url || '#');
       return `<div class="item" style="display:flex;justify-content:space-between;align-items:center">
-                <a href="${escapeHtml(l.url)}" target="_blank">${escapeHtml(l.title)}</a>
+                <a class="access-link" href="${url}" target="_blank" rel="noopener">${title}</a>
                 <div style="display:flex;gap:8px;">
                   <button ${idAttr} class="delete-personal" style="background:#ef4444">Delete</button>
                 </div>
@@ -97,82 +74,68 @@ async function renderAccess() {
     }).join('');
   }
 
-  // Replace accessLinks area with structured sections and Add button
-  accessLinksEl.innerHTML = `
-    <div class="card-grid" style="grid-template-columns:1fr;">
-      <div class="card" style="padding:10px;">
-        <strong>Quick Links</strong>
-        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px">${globalHtml}</div>
-      </div>
-      <div class="card" style="padding:10px;">
-        <strong>Your Links</strong>
-        <div id="personalLinksContainer" style="margin-top:8px">${personalHtml}</div>
-        <div style="margin-top:10px">
-          <button id="addAccessBtn">+ Add Link</button>
-        </div>
-      </div>
-    </div>
-  `;
-
-  // wire delete for personal links
-  const deleteButtons = accessLinksEl.querySelectorAll('button.delete-personal');
-  deleteButtons.forEach(btn => {
+  // Wire delete handlers for personal links
+  personalContainer.querySelectorAll('button.delete-personal').forEach(btn => {
     btn.addEventListener('click', async () => {
-      // two cases: Firestore doc (data-id) or local personal (data-local-idx)
+      if (!confirm('Delete this personal link?')) return;
       const id = btn.getAttribute('data-id');
       const localIdx = btn.getAttribute('data-local-idx');
+
       if (id && hasDB) {
-        // double-check ownership: only allow deleting if owner matches current user
-        if (!user) { alert('Sign in to delete this personal link'); return; }
-        // find doc to ensure owner matches - optimistic UI assumes it was shown because owner==user
+        // Firestore doc deletion - CCDB.deleteAccessLink will delete by doc id
         try {
           await window.CCDB.deleteAccessLink(id);
-          renderAccess();
         } catch (err) {
           console.error('Failed to delete personal access link', err);
           alert('Failed to delete link: ' + (err.message || err));
         }
+        renderAccess();
+        return;
       } else if (localIdx != null) {
-        // remove from local personal array
         const arr = lsLoad(PERSONAL_ACCESS_KEY);
         arr.splice(Number(localIdx), 1);
         lsSave(PERSONAL_ACCESS_KEY, arr);
         renderAccess();
+        return;
       } else {
         alert('Cannot delete this link');
       }
     });
   });
-
-  // wire Add button
-  const addBtn = document.getElementById('addAccessBtn');
-  addBtn?.addEventListener('click', async () => {
-    const title = prompt('Link title (e.g., Portal)');
-    if (!title) return;
-    const url = prompt('URL (include https://)');
-    if (!url) return;
-
-    // If DB available and user signed in => store as personal in Firestore (owner set)
-    if (hasDB && user) {
-      try {
-        await window.CCDB.addAccessLink({ title, url, owner: { uid: user.uid, name: user.name || user.email } });
-        renderAccess();
-        return;
-      } catch (err) {
-        console.error('Failed to create personal link in Firestore', err);
-        alert('Failed to add link: ' + (err.message || err));
-        return;
-      }
-    }
-
-    // Otherwise store personal link locally so visible only in this browser
-    const arr = lsLoad(PERSONAL_ACCESS_KEY);
-    arr.unshift({ title, url, added: Date.now() });
-    lsSave(PERSONAL_ACCESS_KEY, arr);
-    renderAccess();
-  });
 }
+
+// Add button (only creates personal links)
+const addBtn = document.getElementById('addAccessBtn');
+addBtn?.addEventListener('click', async () => {
+  const title = prompt('Link title (e.g., Portal)');
+  if (!title) return;
+  const url = prompt('URL (include https://)');
+  if (!url) return;
+
+  const user = (window.CCAuth && window.CCAuth.currentUser) ? window.CCAuth.currentUser() : null;
+
+  // Personal link: if DB+signed-in => save to Firestore with owner, else fallback to local storage
+  if (hasDB && user) {
+    try {
+      await window.CCDB.addAccessLink({ title, url, owner: { uid: user.uid, name: user.name || user.email } });
+      renderAccess();
+      return;
+    } catch (err) {
+      console.error('Failed to create personal link in Firestore', err);
+      alert('Failed to add link: ' + (err.message || err));
+      return;
+    }
+  }
+
+  // Not signed-in or no DB -> store locally as personal-only
+  const arr = lsLoad(PERSONAL_ACCESS_KEY);
+  arr.unshift({ title, url, added: Date.now() });
+  lsSave(PERSONAL_ACCESS_KEY, arr);
   renderAccess();
+});
+
+// initial render call (replace any earlier renderAccess() call as needed)
+renderAccess();
 
   /* ========= Notes / File Upload ========= */
   const notesListEl = document.getElementById('notesList');
@@ -874,6 +837,7 @@ async function renderAccess() {
     }
   };
 });
+
 
 
 
