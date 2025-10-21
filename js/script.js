@@ -576,11 +576,27 @@ async function renderAccess() {
 
   const nodes = {
     Gate: {id:'gate', x: 80, y: 250},
-    Admin: {id:'admin', x: 260, y:95},
-    Library: {id:'library', x:560, y:95},
-    'Lecture Hall': {id:'lecture', x:270, y:280},
-    Labs: {id:'lab', x:630, y:280},
-    Canteen: {id:'canteen', x:400, y:415}
+    Library: {id:'library', x:370, y:315},
+    'Shakuntalam Hall': {id:'hall', x:450, y:430},
+    'Auditorium/Management dept.': {id:'management', x:650, y:230},
+    'CV RAMAN/Science Block': {id:'cv', x:570, y:540},
+    'Cafeteria(Shri. krishan bhawan)': {id:'canteen', x:200, y:315},
+    'Mechanical engineering dept.': {id:'mechanical', x:450, y:530},
+    'Computer engineering dept.': {id:'comp', x:440, y:315},
+    'Electrical engineering dept.': {id:'ele', x:540, y:315},
+    'Civil engineering dept.': {id:'civil', x:580, y:415},
+    'New Building': {id:'new', x:880, y:325},
+    // 'LaLchowk': {id:'new', x:550, y:230},
+    'V.C. OFFICE': {id:'vc', x:680, y:325},
+    Administravtive: {id:'vc', x:640, y:315},
+    'Girls hostel': {id:'vc', x:710, y:400},
+    Temple: {id:'temple', x:790, y:560},
+    bank: {id:'vbank', x:200, y:550},
+    'Gate-2': {id:'gate2', x:980, y:130},
+    // turn1: {id:'turn', x:330, y:255},
+    // turn2: {id:'turn2', x:710, y:260},
+    // turn3: {id:'turn3', x:400, y:365},
+    // turn4: {id:'turn4', x:515, y:580},
   };
 
   function populateMapSelects(){
@@ -593,26 +609,147 @@ async function renderAccess() {
   populateMapSelects();
 
   const paths = {
-    'Gate->Admin': [{x:80,y:250},{x:160,y:200},{x:230,y:150},{x:260,y:95}],
-    'Gate->Lecture Hall': [{x:80,y:250},{x:160,y:250},{x:230,y:250},{x:270,y:280}],
-    'Admin->Library': [{x:260,y:95},{x:380,y:95},{x:500,y:95},{x:560,y:95}],
-    'Lecture Hall->Labs': [{x:270,y:280},{x:400,y:280},{x:540,y:280},{x:630,y:280}],
-    'Canteen->Lecture Hall': [{x:400,y:415},{x:350,y:350},{x:300,y:300},{x:270,y:280}],
-    'Library->Labs': [{x:560,y:95},{x:560,y:150},{x:560,y:200},{x:560,y:250},{x:560,y:280},{x:630,y:280}]
+    'Gate->turn1': [{x:80,y:250},{x:330, y:255}],
+
+    'turn1->turn3': [{x:330, y:255},{x:330, y:365},{x:400, y:365}],
+    'turn1->turn2': [{x:330, y:255},{x:710, y:260}],
+    'turn3->turn4': [{x:400, y:365},{x:400, y:500},{x:515, y:500},{x:515, y:580}],
+    
+    'Gate->Cafeteria(Shri. krishan bhawan)': [{x:80,y:250},{x:200, y:255},{x:200, y:315}],
+    'bank->Cafeteria(Shri. krishan bhawan)': [{x:200, y:550},{x:150, y:550},{x:150, y:255},{x:200, y:255},{x:200, y:315}],
+    'Gate->bank': [{x:80,y:250},{x:150, y:255},{x:150, y:550},{x:200, y:550}],
+    
+    'turn1->Cafeteria(Shri. krishan bhawan)': [{x:330, y:255},{x:200, y:255},{x:200, y:315}],
+    'turn1->Library': [{x:330, y:255},{x:370, y:255},{x:370, y:315}],
+    'turn1->Computer engineering dept.': [{x:330, y:255},{x:440, y:257},{x:440, y:315}],
+    'turn1->Electrical engineering dept.': [{x:330, y:255},{x:540, y:260},{x:540, y:315}],
+    'turn1->Electrical engineering dept.': [{x:330, y:255},{x:540, y:260},{x:540, y:315}],
+    'turn1->administravtive': [{x:330, y:255},{x:640, y:260},{x:640, y:315}],
+    'turn1->V.C. OFFICE': [{x:330, y:255},{x:680, y:260},{x:680, y:325}],
+    'turn1->Auditorium/Management dept.': [{x:330, y:255},{x:650, y:257},{x:650, y:230}],
+    'turn1->LaLchowk': [{x:330, y:255},{x:550, y:260},{x:550, y:230}],
+    'turn1->bank': [{x:330, y:255},{x:150, y:255},{x:150, y:550},{x:200, y:550}],
+    
+    'Auditorium/Management dept.->V.C. OFFICE': [{x:650, y:230},{x:680, y:325}],
+    
+    'turn2->Library': [{x:710, y:260},{x:370, y:255},{x:370, y:315}],
+    'turn2->Computer engineering dept.': [{x:710, y:260},{x:440, y:257},{x:440, y:315}],
+    'turn2->Electrical engineering dept.': [{x:710, y:260},{x:540, y:260},{x:540, y:315}],
+    'turn2->administravtive': [{x:710, y:260},{x:640, y:260},{x:640, y:315}],
+    'turn2->Auditorium/Management dept.': [{x:710, y:260},{x:650, y:260},{x:650, y:230}],
+    'turn2->V.C. OFFICE': [{x:710, y:260},{x:680, y:260},{x:680, y:325}],
+    'turn2->Girls hostel': [{x:710, y:260},{x:710, y:400}],
+    'turn2->New Building': [{x:710, y:260},{x:820, y:260},{x:820, y:325},{x:880, y:325}],
+    'turn2->LaLchowk': [{x:710, y:260},{x:550, y:260},{x:550, y:230}],
+    'turn2->Gate-2': [{x:710, y:260},{x:710, y:130},{x:980, y:130}],
+    
+    'turn3->Shakuntalam Hall': [{x:400, y:365},{x:400, y:430},{x:450, y:430}],
+    'turn3->Mechanical engineering dept.': [{x:400, y:365},{x:400, y:500},{x:450, y:500},{x:450, y:530}],
+    'turn3->Civil engineering dept.': [{x:330, y:255},{x:330, y:365},{x:580, y:365},{x:580, y:415}],
+    
+    'Shakuntalam Hall->turn4': [{x:450, y:430},{x:400, y:435},{x:400, y:500},{x:515, y:500},{x:515, y:580}],
+    'Shakuntalam Hall->Mechanical engineering dept.': [{x:450, y:430},{x:400, y:435},{x:400, y:500},{x:450, y:500},{x:450, y:530}],
+    
+    'turn4->CV RAMAN/Science Block': [{x:515, y:580},{x:570, y:580},{x:570, y:540}],
+    'turn4->Mechanical engineering dept.': [{x:515, y:580},{x:450, y:580},{x:450, y:530}],
+    'turn4->Temple': [{x:515, y:580},{x:790, y:580},{x:790, y:560}],
+    'turn4->bank': [{x:515, y:580},{x:200, y:580},{x:200, y:550}],
   };
 
-  function findPath(from, to){
-    const direct = `${from}->${to}`;
-    const reverse = `${to}->${from}`;
-    if (paths[direct]) return paths[direct];
-    if (paths[reverse]) return [...paths[reverse]].reverse();
-    const via = 'Lecture Hall';
-    if (from !== via && to !== via) {
-      const p1 = findPath(from, via);
-      const p2 = findPath(via, to);
-      if (p1 && p2) return p1.concat(p2.slice(1));
+  // --- Replacement findPath using BFS on the road graph + safe concatenation ---
+  // Put this where your old findPath(...) was.
+  function findPath(from, to) {
+    // sanity
+    if (!nodes[from] || !nodes[to]) return null;
+    if (from === to) return [{ x: nodes[from].x, y: nodes[from].y }];
+
+    // helper: return stored segment for a->b (prefer fwd, else reverse stored)
+    const getSegment = (a, b) => {
+      const fwd = `${a}->${b}`;
+      const rev = `${b}->${a}`;
+      if (paths[fwd]) return paths[fwd];
+      if (paths[rev]) return [...paths[rev]].reverse();
+      return null;
+    };
+
+    // quick direct check
+    const direct = getSegment(from, to);
+    if (direct) return direct;
+
+    // build adjacency from paths keys (treat roads as bidirectional)
+    const adj = {};
+    Object.keys(paths).forEach(k => {
+      const parts = k.split('->');
+      if (parts.length !== 2) return;
+      const [a, b] = parts;
+      adj[a] = adj[a] || new Set();
+      adj[b] = adj[b] || new Set();
+      adj[a].add(b);
+      adj[b].add(a);
+    });
+
+    // BFS to find shortest hop-path from -> to
+    const queue = [from];
+    const prev = { [from]: null };
+    while (queue.length) {
+      const cur = queue.shift();
+      if (cur === to) break;
+      const neighbors = adj[cur] ? Array.from(adj[cur]) : [];
+      for (const nb of neighbors) {
+        if (prev.hasOwnProperty(nb)) continue;
+        prev[nb] = cur;
+        queue.push(nb);
+      }
     }
-    return [{x:nodes[from].x,y:nodes[from].y},{x:nodes[to].x,y:nodes[to].y}];
+
+    // if no path via roads found, fallback to prior 'via' candidates attempt (optional)
+    if (!prev.hasOwnProperty(to)) {
+      // optional: try your small viaCandidates heuristic (keeps compatibility)
+      const viaCandidates = ['turn1','turn2','turn3','turn4'];
+      for (const via of viaCandidates) {
+        if (!via || via === from || via === to) continue;
+        const s1 = getSegment(from, via);
+        const s2 = getSegment(via, to);
+        if (s1 && s2) return s1.concat(s2.slice(1));
+      }
+      // final fallback: straight centers
+      return [{ x: nodes[from].x, y: nodes[from].y }, { x: nodes[to].x, y: nodes[to].y }];
+    }
+
+    // reconstruct node sequence
+    const seq = [];
+    let cur = to;
+    while (cur !== null) {
+      seq.unshift(cur);
+      cur = prev[cur];
+    }
+
+    // append helper that avoids duplicate consecutive points
+    const appendNoDup = (dest, pts) => {
+      if (!pts || !pts.length) return;
+      if (dest.length === 0) {
+        dest.push(...pts);
+        return;
+      }
+      const last = dest[dest.length - 1];
+      const firstNew = pts[0];
+      if (last.x === firstNew.x && last.y === firstNew.y) dest.push(...pts.slice(1));
+      else dest.push(...pts);
+    };
+
+    // build full polyline by concatenating segments for each edge in seq
+    const full = [];
+    for (let i = 0; i < seq.length - 1; i++) {
+      const a = seq[i], b = seq[i+1];
+      const seg = getSegment(a, b);
+      if (seg) appendNoDup(full, seg);
+      else {
+        // fallback for missing edge: connect centers
+        appendNoDup(full, [{ x: nodes[a].x, y: nodes[a].y }, { x: nodes[b].x, y: nodes[b].y }]);
+      }
+    }
+
+    return full;
   }
 
   function drawPath(ptArray){
@@ -737,4 +874,5 @@ async function renderAccess() {
     }
   };
 });
+
 
