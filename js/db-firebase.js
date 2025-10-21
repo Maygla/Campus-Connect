@@ -80,32 +80,36 @@ async function deleteAccessLink(id) {
   return true;
 }
 
-// ------- Notes (files) -------
+// ------- Notes (files or drive links) -------
 // Uploads file to Storage and metadata to Firestore.
-// file: File object from input, user: { uid, name } optional
-async function uploadNote({ file, subject, title, owner }) {
-  if (!file) throw new Error('file required');
-  const timestamp = Date.now();
-  const safeName = `${timestamp}-${file.name.replace(/\s+/g,'_')}`;
-  const path = `notes/${owner?.uid || 'anon'}/${safeName}`;
-  const ref = storageRef(storage, path);
-
-  // upload
-  const uploadTask = await new Promise((resolve, reject) => {
-    const task = uploadBytesResumable(ref, file);
-    task.on('state_changed', null, err => reject(err), () => resolve(task.snapshot));
-  });
-
-  const url = await getDownloadURL(ref);
+// file: File object from input, driveLink: optional Google Drive URL, user: { uid, name } optional
+async function uploadNote({ file, subject, title, owner, driveLink }) {
   const meta = {
-    filename: file.name,
-    storagePath: path,
-    url,
     subject: subject || '',
-    title: title || file.name,
+    title: title || (file?.name || 'Untitled'),
     owner: owner ? { uid: owner.uid, name: owner.name || owner.email || null } : null,
-    createdAt: toTimestampNow()
+    createdAt: toTimestampNow(),
+    driveLink: driveLink || null
   };
+
+  if (file) {
+    const timestamp = Date.now();
+    const safeName = `${timestamp}-${file.name.replace(/\s+/g, '_')}`;
+    const path = `notes/${owner?.uid || 'anon'}/${safeName}`;
+    const ref = storageRef(storage, path);
+
+    // upload
+    const uploadTask = await new Promise((resolve, reject) => {
+      const task = uploadBytesResumable(ref, file);
+      task.on('state_changed', null, err => reject(err), () => resolve(task.snapshot));
+    });
+
+    const url = await getDownloadURL(ref);
+    meta.filename = file.name;
+    meta.storagePath = path;
+    meta.url = url;
+  }
+
   const docRef = await addDoc(collection(db, 'notes'), meta);
   return { id: docRef.id, ...meta };
 }
@@ -127,7 +131,6 @@ async function deleteNote(id) {
   await deleteDoc(doc(db, 'notes', id));
   return true;
 }
-
 // ------- Forum posts -------
 async function createPost({ author, topic, content }) {
   const p = { author, topic, content, replies: [], createdAt: toTimestampNow() };
@@ -212,5 +215,6 @@ window.CCDB = {
   // low-level handles if you need them:
   _internal: { db, storage }
 };
+
 
 console.log('CCDB (Firestore) initialized');
