@@ -153,31 +153,12 @@
           <svg id="campusMap" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid meet">
             <defs>
               <style>
-                .building { fill:#eee; stroke:#666; stroke-width:2 }
-                .label { font: 14px sans-serif; pointer-events:none }
                 .pathline { fill:none; stroke:#3b82f6; stroke-width:4; opacity:0.8 }
                 .pathAnim { fill:none; stroke:#06b; stroke-width:8; stroke-linecap:round; opacity:0.9 }
               </style>
             </defs>
-
-            <!-- Buildings -->
-            <rect id="gate" class="building" x="20" y="210" width="120" height="80" rx="8" ry="8" />
-            <text x="80" y="255" class="label" text-anchor="middle">Gate</text>
-
-            <rect id="admin" class="building" x="180" y="40" width="160" height="110" rx="8" ry="8"/>
-            <text x="260" y="95" class="label" text-anchor="middle">Admin</text>
-
-            <rect id="library" class="building" x="480" y="40" width="160" height="110" rx="8" ry="8"/>
-            <text x="560" y="95" class="label" text-anchor="middle">Library</text>
-
-            <rect id="lecture" class="building" x="160" y="220" width="220" height="120" rx="8" ry="8"/>
-            <text x="270" y="285" class="label" text-anchor="middle">Lecture Hall</text>
-
-            <rect id="lab" class="building" x="520" y="220" width="220" height="120" rx="8" ry="8"/>
-            <text x="630" y="285" class="label" text-anchor="middle">Labs</text>
-
-            <rect id="canteen" class="building" x="330" y="370" width="140" height="80" rx="8" ry="8"/>
-            <text x="400" y="415" class="label" text-anchor="middle">Canteen</text>
+            <!-- background image for the campus map (put your image at images/campus-map-bg.png) -->
+            <image id="campusBg" x="0" y="0" width="1000" height="600" href="images/campus-map-bg.png" preserveAspectRatio="xMidYMid meet" />
 
             <!-- Paths (hidden until used) -->
             <g id="pathsLayer"></g>
@@ -188,7 +169,7 @@
         </div>
 
         <div id="mapLegend" class="card">
-          <strong>Locations:</strong> Gate, Admin, Library, Lecture Hall, Labs, Canteen.
+          <strong>Locations:</strong> Gate, Library, Shakuntalam Hall, Auditorium/Management dept., CV RAMAN/Science Block, Cafeteria(Shri. krishan bhawan), Mechanical engineering dept., Computer engineering dept., Electrical engineering dept., Civil engineering dept., New Building, V.C. OFFICE, Administravtive, Girls hostel, Temple, Bank, Gate-2.
         </div>
       </section>
     </section>
@@ -207,4 +188,5 @@
   <!-- main site script -->
   <script src="js/script.js"></script>
 </body>
+
 </html>
