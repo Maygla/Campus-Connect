@@ -32,17 +32,31 @@
     </aside>
 
     <section class="content">
-      <!-- Access -->
+      <!-- Access -->  
       <section id="access" class="tab active">
         <h2>Quick Access</h2>
         <p>Open common college tools from one place.</p>
         <div class="card-grid" id="accessLinks">
-          <a href="https://portal.example.edu" target="_blank" rel="noopener">University Portal</a>
-          <a href="https://attendance.example.edu" target="_blank" rel="noopener">Attendance System</a>
-          <a href="https://library.example.edu" target="_blank" rel="noopener">Library</a>
-          <a href="https://placements.example.edu" target="_blank" rel="noopener">Placement Cell</a>
-          <a href="https://events.example.edu" target="_blank" rel="noopener">Events & Fests</a>
-          <a href="#" id="addAccessBtn">+ Add Link</a>
+            <div class="card" id="globalLinks" style="padding:10px;">
+              <strong>Quick Links</strong>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px">
+                <a href="https://jcboseust.ac.in/#" target="_blank" rel="noopener">University Portal</a>
+                <a href="https://jcboseustymca.co.in/" target="_blank" rel="noopener">ERP Login</a>
+                <a href="https://jcboseust.ac.in/login?next=/app" target="_blank" rel="noopener">CMS/Web login</a>
+                <a href="https://jcboseust.refread.com/#/home" target="_blank" rel="noopener">e-Library</a>
+                <a href="https://www.instagram.com/jcboseustofficial/" target="_blank" rel="noopener">Instagram</a>
+              </div>
+            </div>
+  
+            <div class="card" id="personalCard" style="padding:10px;">
+              <strong>Your Links</strong>
+              <div id="personalLinksContainer" style="margin-top:8px">
+                <!-- Populated by js/script.js (personal links only) -->
+              </div>
+              <div style="margin-top:10px">
+                <button id="addAccessBtn">+ Add Link</button>
+              </div>
+            </div>
         </div>
       </section>
 
@@ -190,4 +204,5 @@
 </body>
 
 </html>
+
 
