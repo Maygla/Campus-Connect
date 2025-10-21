@@ -65,20 +65,23 @@
         <h2>Notes & Study Materials</h2>
         <div class="card">
           <form id="uploadForm">
-            <label>Subject
-              <input name="subject" id="noteSubject" placeholder="e.g., Data Structures" required />
-            </label>
-            <label>Title
-              <input name="title" id="noteTitle" placeholder="Lecture 05 - Trees" required />
-            </label>
-            <label>File
-              <input type="file" id="noteFile" required />
-            </label>
-            <div class="row">
-              <button type="submit">Upload Note</button>
-              <button type="button" id="importSampleNotes">Import Sample Notes</button>
-            </div>
-          </form>
+              <label>Subject
+                <input name="subject" id="noteSubject" placeholder="e.g., Data Structures" required />
+              </label>
+              <label>Title
+                <input name="title" id="noteTitle" placeholder="Lecture 05 - Trees" required />
+              </label>
+              <label>File (optional)
+                <input type="file" id="noteFile" />
+              </label>
+              <label>Drive Link (optional)
+                <input type="url" id="noteDriveLink" placeholder="https://drive.google.com/..." />
+              </label>
+              <div class="row">
+                <button type="submit">Upload Note</button>
+                <button type="button" id="importSampleNotes">Import Sample Notes</button>
+              </div>
+            </form>
         </div>
 
         <h3>Your Notes</h3>
@@ -204,5 +207,6 @@
 </body>
 
 </html>
+
 
 
