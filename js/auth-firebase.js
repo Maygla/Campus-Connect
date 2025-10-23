@@ -111,6 +111,12 @@ function updateAuthUI() {
     if (u) {
       const nameSpan = document.createElement("span");
       nameSpan.textContent = u.name || u.email || "User";
+      if (u.email === "aroraganesh2007@gmail.com") {
+        const adminTag = document.createElement("span");
+        adminTag.textContent = " (Admin)";
+        adminTag.style.color = "#2563eb";
+        nameSpan.appendChild(adminTag);
+      }
       nameSpan.style.fontWeight = "600";
       nameSpan.style.color = "#0f172a";
       authArea.appendChild(nameSpan);
@@ -154,4 +160,5 @@ if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", updateAuthUI);
 } else {
   updateAuthUI();
+
 }
