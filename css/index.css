@@ -223,11 +223,7 @@
       margin-top:36px;
       padding:22px 0 44px;
       color:var(--muted);
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      flex-wrap:wrap;
+      align-items:center; 
     }
 
     /* ---------- Utilities ---------- */
@@ -250,4 +246,5 @@
     }
 
     /* subtle button focus */
+
     .btn:focus{outline:3px solid rgba(0,191,166,0.12); outline-offset:2px}
