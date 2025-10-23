@@ -386,9 +386,9 @@ renderAccess();
   });
 
   document.getElementById('clearForumBtn').addEventListener('click', async () => {
+    if (!isAdmin()) { alert('Only admin can clear all posts.'); return; }
     if (!confirm('Clear entire forum?')) return;
     if (hasDB) {
-      // for demo: delete all documents. Be careful - Firestore bulk deletions should use admin or batched writes in prod.
       const posts = await window.CCDB.listPosts();
       await Promise.all(posts.map(p => window.CCDB.deletePost(p.id)));
       renderPosts();
@@ -399,6 +399,16 @@ renderAccess();
   });
 
   renderPosts();
+  // Hide or show the Clear Forum button depending on admin access
+  setTimeout(() => {
+    const clearBtn = document.getElementById('clearForumBtn');
+    if (!clearBtn) return;
+    if (!isAdmin()) {
+      clearBtn.style.display = 'none';
+    } else {
+      clearBtn.style.display = 'inline-block';
+    }
+  }, 1000);
 
     /* ========= News ========= */
   const newsList = document.getElementById('newsList');
@@ -903,6 +913,7 @@ renderAccess();
     }
   };
 });
+
 
 
 
