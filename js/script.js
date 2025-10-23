@@ -15,6 +15,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // Determine whether CCDB (Firestore) is available
   const hasDB = !!(window.CCDB && window.CCDB.listNotes);
   if (!hasDB) console.info('CCDB not available — falling back to localStorage');
+  // Admin email check
+  function isAdmin() {
+    const user = (window.CCAuth && window.CCAuth.currentUser) ? window.CCAuth.currentUser() : null;
+    return user && user.email === "aroraganesh2007@gmail.com";
+  }
 
   // Helper wrappers: if CCDB present use it; else localStorage
   const NOTES_KEY = 'cc_notes_v1';
@@ -395,20 +400,24 @@ renderAccess();
 
   renderPosts();
 
-  /* ========= News ========= */
+    /* ========= News ========= */
   const newsList = document.getElementById('newsList');
   const newsForm = document.getElementById('newsForm');
+
   async function renderNews() {
     if (hasDB) {
       const items = await window.CCDB.listNews();
-      if (!items.length) { newsList.innerHTML = `<div class="item">No news yet.</div>`; return; }
+      if (!items.length) {
+        newsList.innerHTML = `<div class="item">No news yet.</div>`;
+        return;
+      }
       newsList.innerHTML = items.map(n => `
         <div class="item">
           <strong>${escapeHtml(n.title)}</strong> <small>(${escapeHtml(n.tag||'General')})</small>
           <div class="muted">${n.createdAt && n.createdAt.toDate ? n.createdAt.toDate().toLocaleString() : ''}</div>
           <p>${escapeHtml(n.body)}</p>
           <div class="row">
-            <button data-delete="${n.id}" style="background:#ef4444">Delete</button>
+            ${isAdmin() ? `<button data-delete="${n.id}" style="background:#ef4444">Delete</button>` : ""}
           </div>
         </div>
       `).join('');
@@ -421,14 +430,17 @@ renderAccess();
       });
     } else {
       const items = lsLoad(NEWS_KEY);
-      if (items.length === 0) { newsList.innerHTML = `<div class="item">No news yet.</div>`; return; }
+      if (!items.length) {
+        newsList.innerHTML = `<div class="item">No news yet.</div>`;
+        return;
+      }
       newsList.innerHTML = items.map((n, idx) => `
         <div class="item">
           <strong>${escapeHtml(n.title)}</strong> <small>(${escapeHtml(n.tag||'General')})</small>
           <div class="muted">${new Date(n.added).toLocaleString()}</div>
           <p>${escapeHtml(n.body)}</p>
           <div class="row">
-            <button data-delete="${idx}" style="background:#ef4444">Delete</button>
+            ${isAdmin() ? `<button data-delete="${idx}" style="background:#ef4444">Delete</button>` : ""}
           </div>
         </div>
       `).join('');
@@ -437,9 +449,12 @@ renderAccess();
 
   newsForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (!isAdmin()) { alert('Only admin can publish news.'); return; }
+
     const title = document.getElementById('newsTitle').value.trim();
     const tag = document.getElementById('newsTag').value.trim();
     const body = document.getElementById('newsBody').value.trim();
+
     if (hasDB) {
       await window.CCDB.createNews({ title, tag, body, author: (window.CCAuth && window.CCAuth.currentUser) ? window.CCAuth.currentUser() : null });
       newsForm.reset();
@@ -465,22 +480,43 @@ renderAccess();
     }
   });
 
-  renderNews();
+  // Wait for Firebase Auth to finish loading before checking admin access
+  async function initNewsSection() {
+    await renderNews();
+
+    // Run after short delay to allow Firebase to update currentUser
+    setTimeout(() => {
+      const form = document.getElementById('newsForm');
+      if (!form) return; // safety check
+      if (!isAdmin()) {
+        form.style.display = 'none';
+      } else {
+        form.style.display = 'block';
+      }
+    }, 1000); // waits 1 second
+  }
+
+  initNewsSection();
+
 
   /* ========= Schedule ========= */
   const scheduleList = document.getElementById('scheduleList');
   const eventForm = document.getElementById('eventForm');
+
   async function renderSchedule() {
     if (hasDB) {
       const events = await window.CCDB.listEvents();
-      if (!events.length) { scheduleList.innerHTML = `<div class="item">No events yet. Add classes, exams or events above.</div>`; return; }
+      if (!events.length) {
+        scheduleList.innerHTML = `<div class="item">No events yet. Add classes, exams or events above.</div>`;
+        return;
+      }
       events.sort((a,b) => (a.date||'').localeCompare(b.date||''));
       scheduleList.innerHTML = events.map(e => `
         <div class="item">
           <strong>${escapeHtml(e.title)}</strong> <small>${escapeHtml(e.type)}</small>
           <div class="muted">${escapeHtml(e.date)} ${e.time ? '@ '+escapeHtml(e.time):''}</div>
           <div class="row">
-            <button data-delete="${e.id}" style="background:#ef4444">Delete</button>
+            ${isAdmin() ? `<button data-delete="${e.id}" style="background:#ef4444">Delete</button>` : ""}
           </div>
         </div>
       `).join('');
@@ -493,14 +529,17 @@ renderAccess();
       });
     } else {
       const events = lsLoad(SCHEDULE_KEY);
-      if (!events.length) { scheduleList.innerHTML = `<div class="item">No events yet. Add classes, exams or events above.</div>`; return; }
+      if (!events.length) {
+        scheduleList.innerHTML = `<div class="item">No events yet. Add classes, exams or events above.</div>`;
+        return;
+      }
       events.sort((a,b)=>new Date(a.date) - new Date(b.date));
       scheduleList.innerHTML = events.map((e, idx) => `
         <div class="item">
           <strong>${escapeHtml(e.title)}</strong> <small>${escapeHtml(e.type)}</small>
           <div class="muted">${new Date(e.date).toLocaleDateString()} ${e.time ? '@ '+escapeHtml(e.time):''}</div>
           <div class="row">
-            <button data-delete="${idx}" style="background:#ef4444">Delete</button>
+            ${isAdmin() ? `<button data-delete="${idx}" style="background:#ef4444">Delete</button>` : ""}
           </div>
         </div>
       `).join('');
@@ -509,11 +548,15 @@ renderAccess();
 
   eventForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (!isAdmin()) { alert('Only admin can add events.'); return; }
+
     const title = document.getElementById('eventTitle').value.trim();
     const date = document.getElementById('eventDate').value;
     const time = document.getElementById('eventTime').value;
     const type = document.getElementById('eventType').value;
+
     if (!date || !title) return;
+
     if (hasDB) {
       await window.CCDB.createEvent({ title, date, time, type });
       eventForm.reset();
@@ -527,27 +570,23 @@ renderAccess();
     }
   });
 
-  document.getElementById('importSampleSchedule').addEventListener('click', async () => {
-    if (hasDB) {
-      const sample = [
-        { title: 'DSA Lecture', date: shiftDate(1), time:'09:00', type:'class' },
-        { title: 'Math Exam', date: shiftDate(7), time:'10:00', type:'exam' },
-        { title: 'Career Workshop', date: shiftDate(3), time:'14:00', type:'workshop' }
-      ];
-      for (const s of sample) await window.CCDB.createEvent(s);
-      renderSchedule();
-    } else {
-      const sample = [
-        {title:'DSA Lecture', date: shiftDate(1), time:'09:00', type:'class'},
-        {title:'Math Exam', date: shiftDate(7), time:'10:00', type:'exam'},
-        {title:'Career Workshop', date: shiftDate(3), time:'14:00', type:'workshop'}
-      ];
-      lsSave(SCHEDULE_KEY, sample.concat(lsLoad(SCHEDULE_KEY)));
-      renderSchedule();
-    }
-  });
+  // Wait for Firebase Auth to finish loading before checking admin access
+  async function initScheduleSection() {
+    await renderSchedule();
 
-  renderSchedule();
+    // Run after short delay to allow Firebase Auth to update currentUser
+    setTimeout(() => {
+      const form = document.getElementById('eventForm');
+      if (!form) return; // safety check
+      if (!isAdmin()) {
+        form.style.display = 'none';
+      } else {
+        form.style.display = 'block';
+      }
+    }, 1000); // waits 1 second
+  }
+
+  initScheduleSection();
 
   /* ========= Interactive Campus Map (unchanged) ========= */
   const mapFrom = document.getElementById('mapFrom');
@@ -864,6 +903,7 @@ renderAccess();
     }
   };
 });
+
 
 
 
