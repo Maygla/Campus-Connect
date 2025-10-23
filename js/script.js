@@ -621,7 +621,7 @@ renderAccess();
     'New Building': {id:'new', x:880, y:325},
     // 'LaLchowk': {id:'new', x:550, y:230},
     'V.C. OFFICE': {id:'vc', x:680, y:325},
-    Administravtive: {id:'vc', x:640, y:315},
+    // Administravtive: {id:'vc', x:640, y:315},
     'Girls hostel': {id:'vc', x:710, y:400},
     // Temple: {id:'temple', x:790, y:560},
     // bank: {id:'vbank', x:200, y:550},
@@ -913,6 +913,7 @@ renderAccess();
     }
   };
 });
+
 
 
 
