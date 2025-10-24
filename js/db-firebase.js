@@ -158,8 +158,15 @@ async function deletePost(id) {
 }
 
 // ------- News -------
-async function createNews({ title, tag, body, author }) {
-  const n = { title, tag, body, author: author || null, createdAt: toTimestampNow() };
+async function createNews({ title, tag, body, branch, author }) {
+  const n = { 
+    title, 
+    tag, 
+    body, 
+    branch: branch || 'all',
+    author: author || null, 
+    createdAt: toTimestampNow() 
+  };
   const docRef = await addDoc(collection(db, 'news'), n);
   return { id: docRef.id, ...n };
 }
@@ -174,8 +181,15 @@ async function deleteNews(id) {
 }
 
 // ------- Schedule / Events -------
-async function createEvent({ title, date, time, type }) {
-  const e = { title, date, time, type, createdAt: toTimestampNow() };
+async function createEvent({ title, date, time, type, branch }) {
+  const e = { 
+    title, 
+    date, 
+    time, 
+    type,
+    branch: branch || 'all',
+    createdAt: toTimestampNow() 
+  };
   const docRef = await addDoc(collection(db, 'schedule'), e);
   return { id: docRef.id, ...e };
 }
@@ -218,3 +232,4 @@ window.CCDB = {
 
 
 console.log('CCDB (Firestore) initialized');
+
