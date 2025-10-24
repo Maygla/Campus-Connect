@@ -413,61 +413,90 @@ renderAccess();
     /* ========= News ========= */
   const newsList = document.getElementById('newsList');
   const newsForm = document.getElementById('newsForm');
-  // In the renderNews function
-  async function renderNews() {
-    const newsList = document.getElementById('newsList');
-    const selectedBranch = document.getElementById('newsFilter')?.value || 'all';
 
+  // ========= Render News =========
+  async function renderNews() {
+    const selectedBranch = document.getElementById('newsFilter')?.value || 'all';
     if (!newsList) return;
 
     try {
-      let news;
-      if (hasDB) {
-        news = await window.CCDB.listNews();
-      } else {
-        news = lsLoad(NEWS_KEY);
-      }
+      let items = hasDB ? await window.CCDB.listNews() : lsLoad(NEWS_KEY);
 
-      // Filter by branch if selected
-      news = news.filter(item => 
+      // Filter by branch
+      items = items.filter(item =>
         selectedBranch === 'all' || item.branch === selectedBranch
       );
 
-      if (!news.length) {
-        newsList.innerHTML = '<div class="item muted">No news items found.</div>';
+      if (!items.length) {
+        newsList.innerHTML = `<div class="item muted">No news yet.</div>`;
         return;
       }
 
-      newsList.innerHTML = news.map(item => `
+      newsList.innerHTML = items.map((n, idx) => `
         <div class="item">
-          <strong>${escapeHtml(item.title)}</strong>
-          ${item.tag ? `<span class="tag">${escapeHtml(item.tag)}</span>` : ''}
-          ${item.branch ? `<span class="branch-tag">${escapeHtml(item.branch)}</span>` : ''}
-          <div class="muted">${new Date(item.createdAt?.seconds * 1000 || item.added).toLocaleString()}</div>
-          <p>${escapeHtml(item.body)}</p>
+          <strong>${escapeHtml(n.title)}</strong> 
+          ${n.tag ? `<span class="tag">${escapeHtml(n.tag)}</span>` : ''}
+          ${n.branch ? `<span class="branch-tag">${escapeHtml(n.branch)}</span>` : ''}
+          <div class="muted">
+            ${n.createdAt && n.createdAt.seconds
+              ? new Date(n.createdAt.seconds * 1000).toLocaleString()
+              : new Date(n.added).toLocaleString()}
+          </div>
+          <p>${escapeHtml(n.body)}</p>
+          <div class="row">
+            ${isAdmin() 
+              ? `<button data-delete="${hasDB ? n.id : idx}" class="delete-btn" style="background:#ef4444;color:white;padding:4px 10px;border:none;border-radius:6px;cursor:pointer;">Delete</button>` 
+              : ""
+            }
+          </div>
         </div>
       `).join('');
 
+      // Attach delete listeners (for admins only)
+      if (isAdmin()) {
+        newsList.querySelectorAll('button[data-delete]').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            if (!confirm('Delete this news item?')) return;
+
+            if (hasDB) {
+              await window.CCDB.deleteNews(btn.dataset.delete);
+            } else {
+              const arr = lsLoad(NEWS_KEY);
+              arr.splice(btn.dataset.delete, 1);
+              lsSave(NEWS_KEY, arr);
+            }
+
+            renderNews();
+          });
+        });
+      }
+
     } catch (err) {
       console.error('Error rendering news:', err);
-      newsList.innerHTML = '<div class="item error">Failed to load news items.</div>';
+      newsList.innerHTML = `<div class="item error">Failed to load news.</div>`;
     }
   }
+
+  // ========= Add News =========
   newsForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    
+    if (!isAdmin()) { 
+      alert('Only admin can publish news.'); 
+      return; 
+    }
+
     const title = document.getElementById('newsTitle').value.trim();
     const tag = document.getElementById('newsTag').value.trim();
     const body = document.getElementById('newsBody').value.trim();
     const branch = document.getElementById('newsBranch').value;
 
     if (!title || !body) {
-      alert('Please fill in all required fields');
+      alert('Please fill in all required fields.');
       return;
     }
 
-    if (hasDB) {
-      try {
+    try {
+      if (hasDB) {
         await window.CCDB.createNews({
           title,
           tag,
@@ -475,88 +504,74 @@ renderAccess();
           branch,
           author: window.CCAuth?.currentUser()?.email || null
         });
-        newsForm.reset();
-        await renderNews();
-      } catch (err) {
-        console.error('Failed to publish news:', err);
-        alert('Failed to publish news. Please try again.');
+      } else {
+        const arr = lsLoad(NEWS_KEY);
+        arr.unshift({ title, tag, body, branch, added: Date.now() });
+        lsSave(NEWS_KEY, arr);
       }
-    } else {
-      // Fallback to localStorage
-      const arr = lsLoad(NEWS_KEY);
-      arr.unshift({
-        title,
-        tag, 
-        body,
-        branch,
-        added: Date.now()
-      });
-      lsSave(NEWS_KEY, arr);
+
       newsForm.reset();
       renderNews();
+    } catch (err) {
+      console.error('Failed to publish news:', err);
+      alert('Failed to publish news. Please try again.');
     }
   });
 
+  // ========= Clear All News =========
   document.getElementById('clearNewsBtn').addEventListener('click', async () => {
     if (!confirm('Clear all news?')) return;
+
     if (hasDB) {
       const list = await window.CCDB.listNews();
       await Promise.all(list.map(i => window.CCDB.deleteNews(i.id)));
-      renderNews();
     } else {
       lsSave(NEWS_KEY, []);
-      renderNews();
     }
+
+    renderNews();
   });
-    
-  // Add filter change handlers
+
+  // ========= Filter Events =========
   document.getElementById('newsFilter')?.addEventListener('change', renderNews);
   document.getElementById('scheduleFilter')?.addEventListener('change', renderSchedule);
 
-
-  // Wait for Firebase Auth to finish loading before checking admin access
+  // ========= Init Section =========
   async function initNewsSection() {
     await renderNews();
 
-    // Run after short delay to allow Firebase to update currentUser
+    // Wait a second to ensure auth loads
     setTimeout(() => {
       const form = document.getElementById('newsForm');
-      if (!form) return; // safety check
+      if (!form) return;
+
       if (!isAdmin()) {
         form.style.display = 'none';
       } else {
         form.style.display = 'block';
       }
-    }, 1000); // waits 1 second
+    }, 1000);
   }
 
   initNewsSection();
-
 
   /* ========= Schedule ========= */
   const scheduleList = document.getElementById('scheduleList');
   const eventForm = document.getElementById('eventForm');
 
   async function renderSchedule() {
-    const scheduleList = document.getElementById('scheduleList');
     const selectedBranch = document.getElementById('scheduleFilter')?.value || 'all';
-
     if (!scheduleList) return;
 
     try {
-      let events;
-      if (hasDB) {
-        events = await window.CCDB.listEvents();
-      } else {
-        events = lsLoad(SCHEDULE_KEY);
-      }
+      let events = hasDB ? await window.CCDB.listEvents() : lsLoad(SCHEDULE_KEY);
 
-      // Filter by branch if selected
-      events = events.filter(item => 
-        selectedBranch === 'all' || item.branch === selectedBranch
+      // Filter by branch
+      events = events.filter(e =>
+        selectedBranch === 'all' || e.branch === selectedBranch
       );
 
-      // Sort by date and time
+      // Sort by date + time
       events.sort((a, b) => {
         const dateA = new Date(`${a.date} ${a.time || '00:00'}`);
         const dateB = new Date(`${b.date} ${b.time || '00:00'}`);
@@ -564,32 +579,57 @@ renderAccess();
       });
 
       if (!events.length) {
-        scheduleList.innerHTML = '<div class="item muted">No events scheduled.</div>';
+        scheduleList.innerHTML = `<div class="item muted">No events scheduled.</div>`;
         return;
       }
 
-      scheduleList.innerHTML = events.map(event => `
+      scheduleList.innerHTML = events.map((e, idx) => `
         <div class="item">
-          <strong>${escapeHtml(event.title)}</strong>
-          <span class="tag">${escapeHtml(event.type)}</span>
-          ${event.branch ? `<span class="branch-tag">${escapeHtml(event.branch)}</span>` : ''}
+          <strong>${escapeHtml(e.title)}</strong>
+          ${e.type ? `<span class="tag">${escapeHtml(e.type)}</span>` : ''}
+          ${e.branch ? `<span class="branch-tag">${escapeHtml(e.branch)}</span>` : ''}
           <div class="muted">
-            ${new Date(event.date).toLocaleDateString()}
-            ${event.time ? ` at ${event.time}` : ''}
+            ${new Date(e.date).toLocaleDateString()}${e.time ? ` at ${escapeHtml(e.time)}` : ''}
+          </div>
+          <div class="row">
+            ${isAdmin() 
+              ? `<button data-delete="${hasDB ? e.id : idx}" class="delete-btn" style="background:#ef4444;color:white;padding:4px 10px;border:none;border-radius:6px;cursor:pointer;">Delete</button>` 
+              : ""}
           </div>
         </div>
       `).join('');
 
+      // Attach delete listeners (admin only)
+      if (isAdmin()) {
+        scheduleList.querySelectorAll('button[data-delete]').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            if (!confirm('Delete this event?')) return;
+            if (hasDB) {
+              await window.CCDB.deleteEvent(btn.dataset.delete);
+            } else {
+              const arr = lsLoad(SCHEDULE_KEY);
+              arr.splice(btn.dataset.delete, 1);
+              lsSave(SCHEDULE_KEY, arr);
+            }
+            renderSchedule();
+          });
+        });
+      }
+
     } catch (err) {
       console.error('Error rendering schedule:', err);
-      scheduleList.innerHTML = '<div class="item error">Failed to load schedule.</div>';
+      scheduleList.innerHTML = `<div class="item error">Failed to load schedule.</div>`;
     }
   }
 
-  // Update event form submission
+  /* ========= Add Event ========= */
   eventForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    
+    if (!isAdmin()) { 
+      alert('Only admin can add events.');
+      return; 
+    }
+
     const title = document.getElementById('eventTitle').value.trim();
     const date = document.getElementById('eventDate').value;
     const time = document.getElementById('eventTime').value;
@@ -597,65 +637,56 @@ renderAccess();
     const branch = document.getElementById('eventBranch').value;
 
     if (!title || !date) {
-      alert('Please fill in all required fields');
+      alert('Please fill in all required fields.');
       return;
     }
 
-    console.log('Creating event:', { title, date, time, type, branch });
-
-    if (hasDB) {
-      try {
-        await window.CCDB.createEvent({
-          title,
-          date,
-          time,
-          type,
-          branch
-        });
-        eventForm.reset();
-        await renderSchedule();
-      } catch (err) {
-        console.error('Failed to create event:', err);
-        alert('Failed to create event. Please try again.');
+    try {
+      if (hasDB) {
+        await window.CCDB.createEvent({ title, date, time, type, branch });
+      } else {
+        const arr = lsLoad(SCHEDULE_KEY);
+        arr.unshift({ title, date, time, type, branch, added: Date.now() });
+        lsSave(SCHEDULE_KEY, arr);
       }
-    } else {
-      // Fallback to localStorage
-      const arr = lsLoad(SCHEDULE_KEY);
-      arr.unshift({
-        title,
-        date,
-        time,
-        type,
-        branch,
-        added: Date.now()
-      });
-      lsSave(SCHEDULE_KEY, arr);
+
       eventForm.reset();
       renderSchedule();
+    } catch (err) {
+      console.error('Failed to create event:', err);
+      alert('Failed to create event. Please try again.');
     }
   });
 
-  // Add filter change handler
+  /* ========= Clear All Events (optional button) ========= */
+  document.getElementById('clearScheduleBtn')?.addEventListener('click', async () => {
+    if (!confirm('Clear all events?')) return;
+
+    if (hasDB) {
+      const list = await window.CCDB.listEvents();
+      await Promise.all(list.map(i => window.CCDB.deleteEvent(i.id)));
+    } else {
+      lsSave(SCHEDULE_KEY, []);
+    }
+
+    renderSchedule();
+  });
+
+  /* ========= Filter Change ========= */
   document.getElementById('scheduleFilter')?.addEventListener('change', renderSchedule);
 
-  // Wait for Firebase Auth to finish loading before checking admin access
+  /* ========= Init Schedule Section ========= */
   async function initScheduleSection() {
     await renderSchedule();
 
-    // Run after short delay to allow Firebase Auth to update currentUser
     setTimeout(() => {
       const form = document.getElementById('eventForm');
-      if (!form) return; // safety check
-      if (!isAdmin()) {
-        form.style.display = 'none';
-      } else {
-        form.style.display = 'block';
-      }
-    }, 1000); // waits 1 second
+      if (!form) return;
+      form.style.display = isAdmin() ? 'block' : 'none';
+    }, 1000);
   }
 
   initScheduleSection();
-
 
   /* ========= Interactive Campus Map (unchanged) ========= */
   const mapFrom = document.getElementById('mapFrom');
@@ -972,6 +1003,7 @@ renderAccess();
     }
   };
 });
+
 
 
 
