@@ -43,7 +43,11 @@
 
               <!-- Admin-only section (hidden by JS for non-admins) -->
               <div id="adminGlobalLinks" style="margin-top:10px;display:none;">
-                <button id="addGlobalLinkBtn">+ Add Global Link</button>
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                  <input id="globalTitleInput" type="text" placeholder="Global link title (e.g., ERP Portal)" style="padding:6px;" />
+                  <input id="globalUrlInput" type="url" placeholder="https://example.com" style="padding:6px;" />
+                  <button id="addGlobalLinkBtn">+ Add Global Link</button>
+                </div>
               </div>
             </div>
 
@@ -53,12 +57,16 @@
               <div id="personalLinksContainer" style="margin-top:8px">
                 <!-- Populated by js/script.js (personal links only) -->
               </div>
-              <div style="margin-top:10px">
+              <div id="addAccessInline" style="margin-top:10px; display:flex; flex-direction:column; gap:6px;">
+                <input id="accessTitleInput" type="text" placeholder="Link title (e.g., Student Portal)" style="padding:6px;" />
+                <input id="accessUrlInput" type="url" placeholder="https://example.com" style="padding:6px;" />
                 <button id="addAccessBtn">+ Add Link</button>
               </div>
+
             </div>
         </div>
       </section>
+
 
       <!-- Notes -->
       <section id="notes" class="tab">
@@ -242,6 +250,7 @@
 </body>
 
 </html>
+
 
 
 
