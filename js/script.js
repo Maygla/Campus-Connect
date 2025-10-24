@@ -756,12 +756,12 @@ renderAccess();
     // 'turn1->bank': [{x:330, y:255},{x:150, y:255},{x:150, y:550},{x:200, y:550}],
     
     'Auditorium/Management dept.->V.C. OFFICE': [{x:650, y:230},{x:680, y:325}],
-    'Electrical engineering dept.->V.C. OFFICE': [{x:540, y:315},{x:540, y:260},{x:680, y:260},,{x:680, y:325}],
-    'Electrical engineering dept.->Auditorium/Management dept.': [{x:540, y:315},{x:540, y:260},{x:650, y:260},,{x:650, y:230}],
-    'Computer engineering dept.->V.C. OFFICE': [{x:440, y:315},{x:440, y:260},{x:680, y:260},,{x:680, y:325}],
-    'Computer engineering dept.->Auditorium/Management dept.': [{x:440, y:315},{x:440, y:260},{x:650, y:260},,{x:650, y:230}],
-    'Library->Auditorium/Management dept.': [{x:370, y:315},{x:370, y:260},{x:650, y:260},,{x:650, y:230}],
-    'Library->V.C. OFFICE': [{x:370, y:315},{x:370, y:260},{x:680, y:260},,{x:680, y:325}],
+    'Electrical engineering dept.->V.C. OFFICE': [{x:540, y:315},{x:540, y:260},{x:680, y:260},{x:680, y:325}],
+    'Electrical engineering dept.->Auditorium/Management dept.': [{x:540, y:315},{x:540, y:260},{x:650, y:260},{x:650, y:230}],
+    'Computer engineering dept.->V.C. OFFICE': [{x:440, y:315},{x:440, y:260},{x:680, y:260},{x:680, y:325}],
+    'Computer engineering dept.->Auditorium/Management dept.': [{x:440, y:315},{x:440, y:260},{x:650, y:260},{x:650, y:230}],
+    'Library->Auditorium/Management dept.': [{x:370, y:315},{x:370, y:260},{x:650, y:260},{x:650, y:230}],
+    'Library->V.C. OFFICE': [{x:370, y:315},{x:370, y:260},{x:680, y:260},{x:680, y:325}],
     
     'turn2->Library': [{x:710, y:260},{x:370, y:255},{x:370, y:315}],
     'turn2->Computer engineering dept.': [{x:710, y:260},{x:440, y:257},{x:440, y:315}],
@@ -1005,6 +1005,7 @@ renderAccess();
     }
   };
 });
+
 
 
 
