@@ -7,7 +7,8 @@ import {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
-  updateProfile
+  updateProfile,
+  sendEmailVerification
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -38,29 +39,60 @@ function friendlyError(err) {
 // Public API
 async function signup({ name, email, password }) {
   if (!name || !email || !password) throw new Error("All fields are required");
-  // Firebase enforces min 6 chars; we can early check too
-  if (password.length < 6) throw new Error("Password must be at least 6 characters");
+    const strongPassword =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}\[\]:;"'<>,.?~\\/-]).{8,}$/;
+
+  if (!strongPassword.test(password)) {
+    throw new Error("Password must be at least 8 characters and include uppercase, lowercase, number, and special character");
+  }
+
   try {
     const cred = await createUserWithEmailAndPassword(auth, email, password);
-    // store displayName
-    if (cred.user) {
-      try { await updateProfile(cred.user, { displayName: name }); } catch (e) { /* ignore */ }
+    const user = cred.user;
+
+    // Store display name
+    if (user) {
+      try {
+        await updateProfile(user, { displayName: name });
+      } catch (e) {
+        console.warn("Profile update failed:", e);
+      }
+
+      // 👇 Send verification email
+      await sendEmailVerification(user);
+
+      // 👇 Sign out user right after sending verification
+      await signOut(auth);
+
+      // 👇 Tell the UI what happened
+      // alert(`Verification email sent to ${email}. Please verify before signing in.`);
     }
-    return mapUser(cred.user);
+
+    return mapUser(user);
   } catch (err) {
     throw new Error(friendlyError(err).message);
   }
 }
 
+
 async function login({ email, password }) {
   if (!email || !password) throw new Error("Email and password required");
   try {
     const cred = await signInWithEmailAndPassword(auth, email, password);
-    return mapUser(cred.user);
+    const user = cred.user;
+
+    // 👇 Check if verified
+    if (!user.emailVerified) {
+      await signOut(auth);
+      throw new Error("Please verify your email before signing in.");
+    }
+
+    return mapUser(user);
   } catch (err) {
     throw new Error(friendlyError(err).message);
   }
 }
+
 
 async function logout() {
   try {
@@ -162,3 +194,4 @@ if (document.readyState === "loading") {
   updateAuthUI();
 
 }
+
