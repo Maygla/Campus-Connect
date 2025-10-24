@@ -3,17 +3,155 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Login / Signup — Campus Connect</title>
+  <title>Signin/Signup — Campus Connect</title>
   <link rel="stylesheet" href="css/styles.css" />
   <style>
-    /* small overrides for auth page */
-    .auth-wrap{max-width:520px;margin:40px auto;padding:24px;background:#fff;border-radius:12px;box-shadow:0 16px 40px rgba(2,6,23,0.08)}
-    .tabs{display:flex;gap:8px;margin-bottom:16px}
-    .tabs button{flex:1;padding:10px;border-radius:8px;border:1px solid #e6eefc;background:transparent;cursor:pointer}
-    .tabs button.active{background:linear-gradient(90deg,#eff6ff,#dbeafe);border-color:#93c5fd}
-    .auth-form{display:none}
-    .auth-form.active{display:block}
-    .muted{color:#6b7280;font-size:13px}
+  body {
+    font-family: "Inter", "Segoe UI", Arial, sans-serif;
+    background: linear-gradient(135deg, #dbeafe, #eff6ff);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .auth-wrap {
+    width: min(460px,95vw);
+    /* width: 95vw; */
+    margin: 40px auto;
+    padding: 32px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 12px 40px rgba(37, 205, 235, 0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .auth-wrap:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 50px rgba(8, 195, 179, 0.25);
+  }
+
+  h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #00BFA6;
+    text-align: center;
+    margin-bottom: 6px;
+  }
+
+  .muted {
+    color: #6b7280;
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+
+  .tabs button {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    background: #f8fafc;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+
+  .tabs button:hover {
+    background: #e0f2fe;
+    border-color: #00BFA6;
+  }
+
+  .tabs button.active {
+    background: linear-gradient(90deg, #00BFA6, #3ef9e0);
+    border-color: #06eeff;
+    color: #fff;
+  }
+
+  form label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1e293b;
+    margin-bottom: 6px;
+  }
+
+  form input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    font-size: 15px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    margin-bottom: 14px;
+    margin-top: 5px;
+  }
+
+  form input:focus {
+    outline: none;
+    border-color: #00BFA6;
+    box-shadow: 0 0 0 3px rgba(59, 234, 246, 0.2);
+  }
+
+  .row {
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  .row button {
+    background: linear-gradient(90deg, #00BFA6, #3ef9e0);
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .row button:hover {
+    background: linear-gradient(90deg, #3ef9e0, #03ffdd);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+  }
+
+  .auth-form {
+    display: none;
+    animation: fadeIn 0.35s ease;
+  }
+
+  .auth-form.active {
+    display: block;
+  }
+
+  #authMessage {
+    margin-top: 12px;
+    text-align: center;
+    font-weight: 500;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 480px) {
+    .auth-wrap {
+      padding: 24px 20px;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+    }
+  }
+</style>
+
   </style>
 </head>
 <body>
@@ -47,7 +185,7 @@
           <input id="signupEmail" type="email" required />
         </label>
         <label>Password
-          <input id="signupPassword" type="password" placeholder="min 6 characters" required />
+          <input id="signupPassword" type="password" placeholder="8+ chars, uppercase, number & symbol" required />
         </label>
         <div class="row">
           <button type="submit">Create account</button>
@@ -83,13 +221,21 @@
       const name = document.getElementById('signupName').value.trim();
       const email = document.getElementById('signupEmail').value.trim().toLowerCase();
       const password = document.getElementById('signupPassword').value;
+
       try {
         await window.CCAuth.signup({ name, email, password });
-        location.href = 'Home.html';
+
+        authMessageEl.style.color = '#16a34a';
+        authMessageEl.textContent = `Verification email sent to ${email}. Please verify before signing in.`;
+
+        // Optional: Switch back to Sign In tab
+        document.getElementById('tabSignIn').click();
       } catch (err) {
+        authMessageEl.style.color = '#ef4444';
         authMessageEl.textContent = err.message || 'Signup failed';
       }
     });
+
 
     document.getElementById('signInForm').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -105,7 +251,4 @@
     });
   </script>
 </body>
-
 </html>
-
-
