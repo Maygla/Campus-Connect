@@ -413,65 +413,84 @@ renderAccess();
     /* ========= News ========= */
   const newsList = document.getElementById('newsList');
   const newsForm = document.getElementById('newsForm');
-
+  // In the renderNews function
   async function renderNews() {
-    if (hasDB) {
-      const items = await window.CCDB.listNews();
-      if (!items.length) {
-        newsList.innerHTML = `<div class="item">No news yet.</div>`;
+    const newsList = document.getElementById('newsList');
+    const selectedBranch = document.getElementById('newsFilter')?.value || 'all';
+
+    if (!newsList) return;
+
+    try {
+      let news;
+      if (hasDB) {
+        news = await window.CCDB.listNews();
+      } else {
+        news = lsLoad(NEWS_KEY);
+      }
+
+      // Filter by branch if selected
+      news = news.filter(item => 
+        selectedBranch === 'all' || item.branch === selectedBranch
+      );
+
+      if (!news.length) {
+        newsList.innerHTML = '<div class="item muted">No news items found.</div>';
         return;
       }
-      newsList.innerHTML = items.map(n => `
+
+      newsList.innerHTML = news.map(item => `
         <div class="item">
-          <strong>${escapeHtml(n.title)}</strong> <small>(${escapeHtml(n.tag||'General')})</small>
-          <div class="muted">${n.createdAt && n.createdAt.toDate ? n.createdAt.toDate().toLocaleString() : ''}</div>
-          <p>${escapeHtml(n.body)}</p>
-          <div class="row">
-            ${isAdmin() ? `<button data-delete="${n.id}" style="background:#ef4444">Delete</button>` : ""}
-          </div>
+          <strong>${escapeHtml(item.title)}</strong>
+          ${item.tag ? `<span class="tag">${escapeHtml(item.tag)}</span>` : ''}
+          ${item.branch ? `<span class="branch-tag">${escapeHtml(item.branch)}</span>` : ''}
+          <div class="muted">${new Date(item.createdAt?.seconds * 1000 || item.added).toLocaleString()}</div>
+          <p>${escapeHtml(item.body)}</p>
         </div>
       `).join('');
-      newsList.querySelectorAll('button[data-delete]').forEach(b => {
-        b.addEventListener('click', async () => {
-          if (!confirm('Delete news item?')) return;
-          await window.CCDB.deleteNews(b.dataset.delete);
-          renderNews();
-        });
-      });
-    } else {
-      const items = lsLoad(NEWS_KEY);
-      if (!items.length) {
-        newsList.innerHTML = `<div class="item">No news yet.</div>`;
-        return;
-      }
-      newsList.innerHTML = items.map((n, idx) => `
-        <div class="item">
-          <strong>${escapeHtml(n.title)}</strong> <small>(${escapeHtml(n.tag||'General')})</small>
-          <div class="muted">${new Date(n.added).toLocaleString()}</div>
-          <p>${escapeHtml(n.body)}</p>
-          <div class="row">
-            ${isAdmin() ? `<button data-delete="${idx}" style="background:#ef4444">Delete</button>` : ""}
-          </div>
-        </div>
-      `).join('');
+
+    } catch (err) {
+      console.error('Error rendering news:', err);
+      newsList.innerHTML = '<div class="item error">Failed to load news items.</div>';
     }
   }
-
   newsForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    if (!isAdmin()) { alert('Only admin can publish news.'); return; }
-
+    
     const title = document.getElementById('newsTitle').value.trim();
     const tag = document.getElementById('newsTag').value.trim();
     const body = document.getElementById('newsBody').value.trim();
+    const branch = document.getElementById('newsBranch').value;
+
+    if (!title || !body) {
+      alert('Please fill in all required fields');
+      return;
+    }
 
     if (hasDB) {
-      await window.CCDB.createNews({ title, tag, body, author: (window.CCAuth && window.CCAuth.currentUser) ? window.CCAuth.currentUser() : null });
-      newsForm.reset();
-      renderNews();
+      try {
+        await window.CCDB.createNews({
+          title,
+          tag,
+          body,
+          branch,
+          author: window.CCAuth?.currentUser()?.email || null
+        });
+        newsForm.reset();
+        await renderNews();
+      } catch (err) {
+        console.error('Failed to publish news:', err);
+        alert('Failed to publish news. Please try again.');
+      }
     } else {
+      // Fallback to localStorage
       const arr = lsLoad(NEWS_KEY);
-      arr.unshift({ title, tag, body, added: Date.now() });
+      arr.unshift({
+        title,
+        tag, 
+        body,
+        branch,
+        added: Date.now()
+      });
       lsSave(NEWS_KEY, arr);
       newsForm.reset();
       renderNews();
@@ -489,6 +508,11 @@ renderAccess();
       renderNews();
     }
   });
+    
+  // Add filter change handlers
+  document.getElementById('newsFilter')?.addEventListener('change', renderNews);
+  document.getElementById('scheduleFilter')?.addEventListener('change', renderSchedule);
+
 
   // Wait for Firebase Auth to finish loading before checking admin access
   async function initNewsSection() {
@@ -514,71 +538,105 @@ renderAccess();
   const eventForm = document.getElementById('eventForm');
 
   async function renderSchedule() {
-    if (hasDB) {
-      const events = await window.CCDB.listEvents();
-      if (!events.length) {
-        scheduleList.innerHTML = `<div class="item">No events yet. Add classes, exams or events above.</div>`;
-        return;
+    const scheduleList = document.getElementById('scheduleList');
+    const selectedBranch = document.getElementById('scheduleFilter')?.value || 'all';
+
+    if (!scheduleList) return;
+
+    try {
+      let events;
+      if (hasDB) {
+        events = await window.CCDB.listEvents();
+      } else {
+        events = lsLoad(SCHEDULE_KEY);
       }
-      events.sort((a,b) => (a.date||'').localeCompare(b.date||''));
-      scheduleList.innerHTML = events.map(e => `
-        <div class="item">
-          <strong>${escapeHtml(e.title)}</strong> <small>${escapeHtml(e.type)}</small>
-          <div class="muted">${escapeHtml(e.date)} ${e.time ? '@ '+escapeHtml(e.time):''}</div>
-          <div class="row">
-            ${isAdmin() ? `<button data-delete="${e.id}" style="background:#ef4444">Delete</button>` : ""}
-          </div>
-        </div>
-      `).join('');
-      scheduleList.querySelectorAll('button[data-delete]').forEach(b => {
-        b.addEventListener('click', async () => {
-          if (!confirm('Delete event?')) return;
-          await window.CCDB.deleteEvent(b.dataset.delete);
-          renderSchedule();
-        });
+
+      // Filter by branch if selected
+      events = events.filter(item => 
+        selectedBranch === 'all' || item.branch === selectedBranch
+      );
+
+      // Sort by date and time
+      events.sort((a, b) => {
+        const dateA = new Date(`${a.date} ${a.time || '00:00'}`);
+        const dateB = new Date(`${b.date} ${b.time || '00:00'}`);
+        return dateA - dateB;
       });
-    } else {
-      const events = lsLoad(SCHEDULE_KEY);
+
       if (!events.length) {
-        scheduleList.innerHTML = `<div class="item">No events yet. Add classes, exams or events above.</div>`;
+        scheduleList.innerHTML = '<div class="item muted">No events scheduled.</div>';
         return;
       }
-      events.sort((a,b)=>new Date(a.date) - new Date(b.date));
-      scheduleList.innerHTML = events.map((e, idx) => `
+
+      scheduleList.innerHTML = events.map(event => `
         <div class="item">
-          <strong>${escapeHtml(e.title)}</strong> <small>${escapeHtml(e.type)}</small>
-          <div class="muted">${new Date(e.date).toLocaleDateString()} ${e.time ? '@ '+escapeHtml(e.time):''}</div>
-          <div class="row">
-            ${isAdmin() ? `<button data-delete="${idx}" style="background:#ef4444">Delete</button>` : ""}
+          <strong>${escapeHtml(event.title)}</strong>
+          <span class="tag">${escapeHtml(event.type)}</span>
+          ${event.branch ? `<span class="branch-tag">${escapeHtml(event.branch)}</span>` : ''}
+          <div class="muted">
+            ${new Date(event.date).toLocaleDateString()}
+            ${event.time ? ` at ${event.time}` : ''}
           </div>
         </div>
       `).join('');
+
+    } catch (err) {
+      console.error('Error rendering schedule:', err);
+      scheduleList.innerHTML = '<div class="item error">Failed to load schedule.</div>';
     }
   }
 
+  // Update event form submission
   eventForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    if (!isAdmin()) { alert('Only admin can add events.'); return; }
-
+    
     const title = document.getElementById('eventTitle').value.trim();
     const date = document.getElementById('eventDate').value;
     const time = document.getElementById('eventTime').value;
     const type = document.getElementById('eventType').value;
+    const branch = document.getElementById('eventBranch').value;
 
-    if (!date || !title) return;
+    if (!title || !date) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    console.log('Creating event:', { title, date, time, type, branch });
 
     if (hasDB) {
-      await window.CCDB.createEvent({ title, date, time, type });
-      eventForm.reset();
-      renderSchedule();
+      try {
+        await window.CCDB.createEvent({
+          title,
+          date,
+          time,
+          type,
+          branch
+        });
+        eventForm.reset();
+        await renderSchedule();
+      } catch (err) {
+        console.error('Failed to create event:', err);
+        alert('Failed to create event. Please try again.');
+      }
     } else {
+      // Fallback to localStorage
       const arr = lsLoad(SCHEDULE_KEY);
-      arr.push({ title, date, time, type });
+      arr.unshift({
+        title,
+        date,
+        time,
+        type,
+        branch,
+        added: Date.now()
+      });
       lsSave(SCHEDULE_KEY, arr);
       eventForm.reset();
       renderSchedule();
     }
   });
+
+  // Add filter change handler
+  document.getElementById('scheduleFilter')?.addEventListener('change', renderSchedule);
 
   // Wait for Firebase Auth to finish loading before checking admin access
   async function initScheduleSection() {
@@ -597,6 +655,7 @@ renderAccess();
   }
 
   initScheduleSection();
+
 
   /* ========= Interactive Campus Map (unchanged) ========= */
   const mapFrom = document.getElementById('mapFrom');
@@ -913,6 +972,7 @@ renderAccess();
     }
   };
 });
+
 
 
 
