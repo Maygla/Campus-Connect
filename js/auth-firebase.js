@@ -160,5 +160,4 @@ if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", updateAuthUI);
 } else {
   updateAuthUI();
-
 }
