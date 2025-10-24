@@ -154,14 +154,14 @@ renderAccess();
         notesListEl.innerHTML = `<div class="item">No notes yet. Upload using the form above.</div>`;
         return;
       }
-      notesListEl.innerHTML = notes.map((n, idx) => `
+      notesListEl.innerHTML = notes.map((n) => `
         <div class="item">
           <strong>${escapeHtml(n.title)}</strong> <small>(${escapeHtml(n.subject || '')})</small>
           <div class="muted">${n.createdAt && n.createdAt.toDate ? n.createdAt.toDate().toLocaleString() : ''}</div>
           <div class="row" style="margin-top:8px">
-            ${n.url ? `<a class="btn-download" data-id="${n.id}" href="${n.url}" target="_blank"><button>Download</button></a>` : ''}
-            ${n.driveLink ? `<a href="${escapeHtml(n.driveLink)}" target="_blank"><button>Open Drive Link</button></a>` : ''}
-            <button data-delete="${n.id}" style="background:#ef4444">Delete</button>
+            ${n.url ? <a class="btn-download" data-id="${n.id}" href="${n.url}" target="_blank"><button>Download</button></a> : ''}
+            ${n.driveLink ? <a href="${escapeHtml(n.driveLink)}" target="_blank"><button>Open Drive Link</button></a> : ''}
+            ${isAdmin() ? <button data-delete="${n.id}" style="background:#ef4444">Delete</button> : ''}
           </div>
         </div>
       `).join('');
@@ -1003,6 +1003,7 @@ renderAccess();
     }
   };
 });
+
 
 
 
