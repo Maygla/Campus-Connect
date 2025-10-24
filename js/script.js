@@ -43,7 +43,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const personalContainer = document.getElementById('personalLinksContainer');
     if (!personalContainer) return;
 
-    const user = (window.CCAuth && window.CCAuth.currentUser) ? window.CCAuth.currentUser() : null;
+    const user = (window.CCAuth && window.CCAuth.currentUser)
+      ? window.CCAuth.currentUser()
+      : null;
 
     let personalLinks = [];
     if (hasDB && user) {
@@ -69,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="item" style="display:flex;justify-content:space-between;align-items:center">
             <a class="access-link" href="${url}" target="_blank" rel="noopener">${title}</a>
             <div style="display:flex;gap:8px;">
-              <button ${idAttr} class="delete-personal" style="background:#ef4444">Delete</button>
+              <button ${idAttr} class="delete-personal" style="background:#ef4444;color:white;">Delete</button>
             </div>
           </div>
         `;
@@ -101,32 +103,49 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Inline Add Link Handler
   const addBtn = document.getElementById('addAccessBtn');
   addBtn?.addEventListener('click', async () => {
-    const title = prompt('Link title (e.g., Portal)');
-    if (!title) return;
-    const url = prompt('URL (include https://)');
-    if (!url) return;
+    const titleInput = document.getElementById('accessTitleInput');
+    const urlInput = document.getElementById('accessUrlInput');
 
-    const user = (window.CCAuth && window.CCAuth.currentUser) ? window.CCAuth.currentUser() : null;
+    const title = titleInput?.value.trim();
+    const url = urlInput?.value.trim();
 
-    if (hasDB && user) {
-      try {
-        await window.CCDB.addAccessLink({ title, url, owner: { uid: user.uid, name: user.name || user.email } });
-        renderAccess();
-      } catch (err) {
-        console.error('Failed to create personal link in Firestore', err);
-        alert('Failed to add link: ' + (err.message || err));
+    if (!title || !url) {
+      alert('Please enter both a title and a valid URL.');
+      return;
+    }
+
+    const user = (window.CCAuth && window.CCAuth.currentUser)
+      ? window.CCAuth.currentUser()
+      : null;
+
+    try {
+      if (hasDB && user) {
+        await window.CCDB.addAccessLink({
+          title,
+          url,
+          owner: { uid: user.uid, name: user.name || user.email }
+        });
+      } else {
+        const arr = lsLoad(PERSONAL_ACCESS_KEY);
+        arr.unshift({ title, url, added: Date.now() });
+        lsSave(PERSONAL_ACCESS_KEY, arr);
       }
-    } else {
-      const arr = lsLoad(PERSONAL_ACCESS_KEY);
-      arr.unshift({ title, url, added: Date.now() });
-      lsSave(PERSONAL_ACCESS_KEY, arr);
+
+      // Clear inputs and refresh
+      titleInput.value = '';
+      urlInput.value = '';
       renderAccess();
+    } catch (err) {
+      console.error('Failed to add link:', err);
+      alert('Failed to add link: ' + (err.message || err));
     }
   });
 
   renderAccess();
+
 
   /* ========= Global Quick Links (Admin-Controlled) ========= */
   async function renderGlobalLinks() {
@@ -149,11 +168,12 @@ document.addEventListener('DOMContentLoaded', () => {
       container.innerHTML = globals.map(g => `
         <div class="item" style="display:flex;justify-content:space-between;align-items:center;width:100%;">
           <a href="${g.url}" target="_blank" rel="noopener">${escapeHtml(g.title)}</a>
-          ${isAdmin() ? `<button data-id="${g.id}" class="delete-global" style="background:#ef4444">Delete</button>` : ''}
+          ${isAdmin() ? `<button data-id="${g.id}" class="delete-global" style="background:#ef4444;color:white;">Delete</button>` : ''}
         </div>
       `).join('');
     }
 
+    // Delete buttons for admin
     if (isAdmin()) {
       container.querySelectorAll('.delete-global').forEach(btn => {
         btn.addEventListener('click', async () => {
@@ -168,16 +188,34 @@ document.addEventListener('DOMContentLoaded', () => {
     if (adminBox) adminBox.style.display = isAdmin() ? 'block' : 'none';
   }
 
+  // Inline Add Global Link Handler
   document.getElementById('addGlobalLinkBtn')?.addEventListener('click', async () => {
     if (!isAdmin()) return alert('Only admin can add global links.');
-    const title = prompt('Enter link title:');
-    const url = prompt('Enter link URL (include https://):');
-    if (!title || !url) return;
-    await window.CCDB.addAccessLink({ title, url }); // owner=null => global
-    renderGlobalLinks();
+
+    const titleInput = document.getElementById('globalTitleInput');
+    const urlInput = document.getElementById('globalUrlInput');
+
+    const title = titleInput?.value.trim();
+    const url = urlInput?.value.trim();
+
+    if (!title || !url) {
+      alert('Please enter both title and URL.');
+      return;
+    }
+
+    try {
+      await window.CCDB.addAccessLink({ title, url }); // owner=null => global
+      titleInput.value = '';
+      urlInput.value = '';
+      renderGlobalLinks();
+    } catch (err) {
+      console.error('Failed to add global link:', err);
+      alert('Failed to add link: ' + (err.message || err));
+    }
   });
 
   renderGlobalLinks();
+
 
   /* ========= Notes / File Upload ========= */
   const notesListEl = document.getElementById('notesList');
@@ -1051,6 +1089,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 });
+
 
 
 
