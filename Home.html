@@ -39,34 +39,26 @@
         <div class="card-grid" id="accessLinks">
             <div class="card" id="globalLinks" style="padding:10px;">
               <strong>Quick Links</strong>
-              <div id="globalLinksContainer" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px"></div>
-
-              <!-- Admin-only section (hidden by JS for non-admins) -->
-              <div id="adminGlobalLinks" style="margin-top:10px;display:none;">
-                <div style="display:flex;flex-direction:column;gap:6px;">
-                  <input id="globalTitleInput" type="text" placeholder="Global link title (e.g., ERP Portal)" style="padding:6px;" />
-                  <input id="globalUrlInput" type="url" placeholder="https://example.com" style="padding:6px;" />
-                  <button id="addGlobalLinkBtn">+ Add Global Link</button>
-                </div>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px">
+                <a href="https://jcboseust.ac.in/#" target="_blank" rel="noopener">University Portal</a>
+                <a href="https://jcboseustymca.co.in/" target="_blank" rel="noopener">ERP Login</a>
+                <a href="https://jcboseust.ac.in/login?next=/app" target="_blank" rel="noopener">CMS/Web login</a>
+                <a href="https://jcboseust.refread.com/#/home" target="_blank" rel="noopener">e-Library</a>
+                <a href="https://www.instagram.com/jcboseustofficial/" target="_blank" rel="noopener">Instagram</a>
               </div>
             </div>
-
   
             <div class="card" id="personalCard" style="padding:10px;">
               <strong>Your Links</strong>
               <div id="personalLinksContainer" style="margin-top:8px">
                 <!-- Populated by js/script.js (personal links only) -->
               </div>
-              <div id="addAccessInline" style="margin-top:10px; display:flex; flex-direction:column; gap:6px;">
-                <input id="accessTitleInput" type="text" placeholder="Link title (e.g., Student Portal)" style="padding:6px;" />
-                <input id="accessUrlInput" type="url" placeholder="https://example.com" style="padding:6px;" />
+              <div style="margin-top:10px">
                 <button id="addAccessBtn">+ Add Link</button>
               </div>
-
             </div>
         </div>
       </section>
-
 
       <!-- Notes -->
       <section id="notes" class="tab">
@@ -250,7 +242,6 @@
 </body>
 
 </html>
-
 
 
 
