@@ -55,6 +55,8 @@ function toTimestampNow() {
   return serverTimestamp();
 }
 
+
+
 // ------- Access links -------
 async function addAccessLink({ title, url, owner = null }) {
   if (!title || !url) throw new Error('title and url required');
@@ -79,6 +81,8 @@ async function deleteAccessLink(id) {
 }
 
 // ------- Notes (files or drive links) -------
+// Uploads file to Storage and metadata to Firestore.
+// file: File object from input, driveLink: optional Google Drive URL, user: { uid, name } optional
 async function uploadNote({ file, subject, title, owner, driveLink }) {
   const meta = {
     subject: subject || '',
@@ -127,58 +131,27 @@ async function deleteNote(id) {
   await deleteDoc(doc(db, 'notes', id));
   return true;
 }
-
 // ------- Forum posts -------
-// createPost now expects authorName & authorEmail (authorName optional fallback supported)
-async function createPost({ authorName, authorEmail, topic, content }) {
-  const p = {
-    authorName: authorName || null,
-    authorEmail: authorEmail || null,
-    topic,
-    content,
-    replies: [],
-    createdAt: toTimestampNow()
-  };
+async function createPost({ author, topic, content }) {
+  const p = { author, topic, content, replies: [], createdAt: toTimestampNow() };
   const docRef = await addDoc(collection(db, 'posts'), p);
   return { id: docRef.id, ...p };
 }
-
 async function listPosts() {
   const q = query(collection(db, 'posts'), orderBy('createdAt', 'desc'));
   const snap = await getDocs(q);
   return snapToArray(snap);
 }
-
-// replyToPost now expects { authorName, authorEmail, text }
-async function replyToPost(postId, { authorName, authorEmail, text }) {
+async function replyToPost(postId, { author, text }) {
   const docRef = doc(db, 'posts', postId);
   const d = await getDoc(docRef);
   if (!d.exists()) throw new Error('Post not found');
   const post = d.data();
   const replies = post.replies || [];
-  replies.push({
-    id: `${Date.now()}`,
-    authorName: authorName || null,
-    authorEmail: authorEmail || null,
-    text,
-    createdAt: toTimestampNow(),
-    replies: []
-  });
+  replies.push({ id: `${Date.now()}`, author, text, createdAt: new Date() });
   await updateDoc(docRef, { replies });
   return true;
 }
-
-// updatePost - overwrite a post doc (useful when modifying nested replies)
-async function updatePost(post) {
-  if (!post || !post.id) throw new Error('post.id required');
-  const docRef = doc(db, 'posts', post.id);
-  // remove id before set (you can keep it too but Firestore doc will have its id)
-  const payload = { ...post };
-  delete payload.id;
-  await setDoc(docRef, payload);
-  return true;
-}
-
 async function deletePost(id) {
   await deleteDoc(doc(db, 'posts', id));
   return true;
@@ -244,7 +217,6 @@ window.CCDB = {
   createPost,
   listPosts,
   replyToPost,
-  updatePost,
   deletePost,
   // news
   createNews,
@@ -258,4 +230,6 @@ window.CCDB = {
   _internal: { db, storage }
 };
 
+
 console.log('CCDB (Firestore) initialized');
+
