@@ -74,7 +74,7 @@
               <label  style="display:none">File
                 <input type="file" id="noteFile" />
               </label>
-              <label>Drive Link (optional)
+              <label>Drive Link
                 <input type="url" id="noteDriveLink" placeholder="https://drive.google.com/..." />
               </label>
               <div class="row">
@@ -114,12 +114,28 @@
           <form id="newsForm">
             <input id="newsTitle" placeholder="Title" required />
             <input id="newsTag" placeholder="Tag (e.g., Placement)" />
+            <select id="newsBranch" required>
+                <option value="all">All Branches</option>
+                <option value="cse">Computer Engineering</option>
+                <option value="me">Mechanical Engineering</option>
+                <option value="ee">Electrical Engineering</option>
+                <option value="ce">Civil Engineering</option>
+            </select>
             <textarea id="newsBody" placeholder="Short summary" rows="3" required></textarea>
             <div class="row">
               <button type="submit">Publish</button>
               <button type="button" id="clearNewsBtn">Clear News (dev)</button>
             </div>
           </form>
+        </div>
+        <div class="filter-controls">
+          <select id="newsFilter">
+              <option value="all">All Branches</option>
+              <option value="cse">Computer Engineering</option>
+              <option value="me">Mechanical Engineering</option>
+              <option value="ee">Electrical Engineering</option>
+              <option value="ce">Civil Engineering</option>
+          </select>
         </div>
 
         <div id="newsList" class="list"></div>
@@ -139,11 +155,27 @@
               <option value="event">Event</option>
               <option value="workshop">Workshop</option>
             </select>
+            <select id="eventBranch" required>
+                <option value="all">All Branches</option>
+                <option value="cse">Computer Engineering</option>
+                <option value="me">Mechanical Engineering</option>
+                <option value="ee">Electrical Engineering</option>
+                <option value="ce">Civil Engineering</option>
+            </select>
             <div class="row">
               <button type="submit">Add</button>
               <button type="button" id="importSampleSchedule">Import Sample</button>
             </div>
           </form>
+        </div>
+        <div class="filter-controls">
+          <select id="scheduleFilter">
+                  <option value="all">All Branches</option>
+                  <option value="cse">Computer Engineering</option>
+                  <option value="me">Mechanical Engineering</option>
+                  <option value="ee">Electrical Engineering</option>
+                  <option value="ce">Civil Engineering</option>
+          </select>
         </div>
 
         <div id="scheduleList" class="list"></div>
@@ -195,7 +227,7 @@
 
   <footer class="footer">
     <small>&copy; Campus Connect | J.C. Bose University Of Science & Technology, YMCA Faridabad
-    <br> email- technovengers@gmail.com</small>
+    <br> Contact us:- technovengers@gmail.com</small>
   </footer>
 
   <!-- Authentication script: manages login/signup and updates topbar -->
@@ -209,12 +241,3 @@
 </body>
 
 </html>
-
-
-
-
-
-
-
-
-
