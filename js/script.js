@@ -159,12 +159,13 @@ renderAccess();
           <strong>${escapeHtml(n.title)}</strong> <small>(${escapeHtml(n.subject || '')})</small>
           <div class="muted">${n.createdAt && n.createdAt.toDate ? n.createdAt.toDate().toLocaleString() : ''}</div>
           <div class="row" style="margin-top:8px">
-            ${n.url ? <a class="btn-download" data-id="${n.id}" href="${n.url}" target="_blank"><button>Download</button></a> : ''}
-            ${n.driveLink ? <a href="${escapeHtml(n.driveLink)}" target="_blank"><button>Open Drive Link</button></a> : ''}
-            ${isAdmin() ? <button data-delete="${n.id}" style="background:#ef4444">Delete</button> : ''}
+            ${n.url ? `<a class="btn-download" data-id="${n.id}" href="${n.url}" target="_blank"><button>Download</button></a>` : ''}
+            ${n.driveLink ? `<a href="${escapeHtml(n.driveLink)}" target="_blank"><button>Open Drive Link</button></a>` : ''}
+            ${isAdmin() ? `<button data-delete="${n.id}" style="background:#ef4444">Delete</button>` : ''}
           </div>
         </div>
       `).join('');
+
       // wire delete
       notesListEl.querySelectorAll('button[data-delete]').forEach(btn => {
         btn.addEventListener('click', async () => {
@@ -688,6 +689,7 @@ renderAccess();
 
   initScheduleSection();
 
+
   /* ========= Interactive Campus Map (unchanged) ========= */
   const mapFrom = document.getElementById('mapFrom');
   const mapTo = document.getElementById('mapTo');
@@ -1003,10 +1005,6 @@ renderAccess();
     }
   };
 });
-
-
-
-
 
 
 
