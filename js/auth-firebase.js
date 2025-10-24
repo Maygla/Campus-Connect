@@ -143,7 +143,7 @@ function updateAuthUI() {
     if (u) {
       const nameSpan = document.createElement("span");
       nameSpan.textContent = u.name || u.email || "User";
-      if (u.email === "aroraganesh2007@gmail.com") {
+      if (u.email === "wearetechnovengers@gmail.com") {
         const adminTag = document.createElement("span");
         adminTag.textContent = " (Admin)";
         adminTag.style.color = "#2563eb";
@@ -194,4 +194,5 @@ if (document.readyState === "loading") {
   updateAuthUI();
 
 }
+
 
