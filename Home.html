@@ -66,7 +66,228 @@
         <div class="card">
           <form id="uploadForm">
               <label>Subject
-                <input name="subject" id="noteSubject" placeholder="e.g., Data Structures" required />
+                <select name="subject" id="noteSubject" required>
+                  <option value="">Select a subject</option>
+
+                  <!-- Semester / Area grouped subjects - extended list -->
+                  <optgroup label="Fundamentals & Sem 1">
+                    <option value="physics-waves">Physics (Waves and Optics)</option>
+                    <option value="chemistry">Chemistry</option>
+                    <option value="mathematics-1">Mathematics-I (Calculus and Differential Equations)</option>
+                    <option value="engineering-graphics-design">Engineering Graphics & Design</option>
+                    <option value="programming-problem-solving">Programming for Problem Solving</option>
+                    <option value="workshop-i">Workshop-I</option>
+                    <option value="physics-lab">Physics Lab</option>
+                    <option value="pps-lab">Programming for Problem Solving Lab</option>
+                  </optgroup>
+
+                  <optgroup label="Sem 2">
+                    <option value="mathematics-2">Mathematics-II (Linear Algebra, Transform Calculus and Numerical Methods)</option>
+                    <option value="basic-electrical-engineering">Basic Electrical Engineering</option>
+                    <option value="bme">Basic Mechanical Engineering</option>
+                    <option value="workshop-ii">Workshop-II</option>
+                    <option value="english">English</option>
+                    <option value="bee-lab">Basic Electrical Engineering Lab</option>
+                    <option value="chemistry-lab">Chemistry Lab</option>
+                    <option value="english-lab">English Lab</option>
+                  </optgroup>
+
+                  <optgroup label="Sem 3">
+                    <option value="electrical-circuit-analysis">Electrical Circuit Analysis</option>
+                    <option value="analog-electronics-circuits">Analog Electronics Circuits</option>
+                    <option value="electrical-machines-i">Electrical Machines-I</option>
+                    <option value="electromagnetic-fields">Electromagnetic Fields</option>
+                    <option value="engineering-mechanics">Engineering Mechanics</option>
+                    <option value="mathematics-3">Mathematics-III (Probability and Statistics)</option>
+                    <option value="constitution-india">Constitution of India / Essence of Indian Traditional Knowledge</option>
+                    <option value="analog-electronics-lab">Analog Electronics Circuit Lab</option>
+                    <option value="electrical-machines-i-lab">Electrical Machines-I Lab</option>
+                    <option value="electrical-workshop-iii">Electrical Workshop-III</option>
+                    <option value="dsa">Data Structures & Algorithms</option>
+                    <option value="etc">Effective Technical Communication</option>
+                    <option value="project-1">Project-I (Capstone)</option>
+                    <option value="it-workshop">IT Workshop</option>
+                    <option value="dsa-lab">DSA Lab</option>
+                  </optgroup>
+
+                  <optgroup label="Sem 4">
+                    <option value="digital-electronics">Digital Electronics</option>
+                    <option value="electrical-machines-ii">Electrical Machines-II</option>
+                    <option value="power-electronics">Power Electronics</option>
+                    <option value="signals-and-systems">Signals and Systems</option>
+                    <option value="digital-electronics-lab">Digital Electronics Lab</option>
+                    <option value="electrical-machines-ii-lab">Electrical Machines-II Lab</option>
+                    <option value="power-electronics-lab">Power Electronics Lab</option>
+                    <option value="electrical-workshop-iv">Electrical Workshop-IV</option>
+                    <optgroup label="Program Elective-I (choose one)">
+                      <option value="pe1-electrical-energy-conservation">Electrical Energy Conservation & Auditing</option>
+                      <option value="pe1-industrial-electrical-systems">Industrial Electrical Systems</option>
+                      <option value="pe1-computer-architecture">Computer Architecture</option>
+                    </optgroup>
+                    <option value="environmental-sciences">Environmental Sciences (Mandatory)</option>
+                    <option value="dm">Discrete Mathematics</option>
+                    <option value="coa">Computer Organization & Architecture</option>
+                    <option value="os">Operating Systems</option>
+                    <option value="daa">Design & Analysis of Algorithms</option>
+                    <option value="efe">Economics for Engineers</option>
+                    <option value="evsc">Environmental Sciences</option>
+                    <option value="project-2">Project-II (Capstone)</option>
+                    <option value="labs-2">Labs Sem4: COA Lab, OS Lab, DAA Lab</option>
+                  </optgroup>
+
+                  <optgroup label="Sem 5">
+                    <option value="power-systems-i">Power Systems-I (Apparatus and Modelling)</option>
+                    <option value="control-systems">Control Systems</option>
+                    <option value="microprocessors">Microprocessors</option>
+                    <option value="biology">Biology (Common to all branches)</option>
+                    <option value="power-systems-lab-i">Power Systems Lab-I</option>
+                    <option value="control-systems-lab">Control Systems Lab</option>
+                    <option value="microprocessors-lab">Microprocessors Lab</option>
+                    <option value="electrical-workshop-v">Electrical Workshop-V</option>
+                    <option value="minor-project-i">Minor Project-I</option>
+                    <option value="dbms">Database Management Systems</option>
+                    <option value="cn">Computer Networks</option>
+                    <option value="se">Software Engineering</option>
+                    <option value="toc">Theory of Computation</option>
+                    <option value="pe-1">Professional Elective-I</option>
+                    <option value="uhv">Universal Human Values (VAC)</option>
+                    <option value="labs-3">Labs Sem5: DBMS Lab, CN Lab, Software Engineering Lab</option>
+                  </optgroup>
+
+                  <optgroup label="Sem 6">
+                    <option value="power-systems-ii">Power Systems-II (Operation and Control)</option>
+                    <option value="electrical-measurements-instrumentation">Electrical Measurements & Instrumentation</option>
+                    <option value="electronics-design">Electronics Design</option>
+                    <option value="power-systems-lab-ii">Power Systems Lab-II</option>
+                    <option value="emi-lab">Electrical Measurements & Instrumentation Lab</option>
+                    <option value="electronics-design-lab">Electronics Design Lab</option>
+                    <option value="electrical-workshop-vi">Electrical Workshop-VI</option>
+                    <option value="social-work">Social Work (Value-Added Course)</option>
+                    <option value="shrimad-bhagavad-gita">Message from Shrimad Bhagavad Gita</option>
+                    <option value="essence-indian-traditional-knowledge">Essence of Indian Traditional Knowledge</option>
+                    <option value="open-elective-v">Open Elective-V</option>
+                    <option value="ai">Artificial Intelligence</option>
+                    <option value="cd">Compiler Design</option>
+                    <option value="wt">Web Technologies</option>
+                    <option value="pe-2">Professional Elective-II</option>
+                    <option value="pe-3">Professional Elective-III</option>
+                    <option value="labs-4">Labs Sem6: AI Lab, Compiler Lab, Web Tech Lab</option>
+                  </optgroup>
+
+                  <!-- Generic program electives and broad topics -->
+                  <optgroup label="Program Electives / Other Topics">
+                    <option value="program-elective-i">Program Elective-I</option>
+                    <option value="program-elective-ii">Program Elective-II</option>
+                    <option value="program-elective-iii">Program Elective-III</option>
+                    <option value="program-elective-iv">Program Elective-IV</option>
+                    <option value="program-elective-v">Program Elective-V</option>
+                    <option value="project-3">Project-III</option>
+                    <option value="pe-4">Professional Elective-IV</option>
+                    <option value="pe-5">Professional Elective-V</option>
+                    <option value="pe-6">Professional Elective-VI</option>
+            	      <option value="project-4">Project-IV</option>
+                    <option value="ob-fa">Organizational Behaviour / Finance & Accounting (HSMC)</option>
+                    <option value="project-5">Project-V (Capstone Project)</option>
+                    <option value="basic-electronics">Basic Electronics</option>
+                    <option value="basics-of-civil-engineering">Basics of Civil Engineering</option>
+                    <option value="building-materials-testing">Building Materials and Testing</option>
+                    <option value="materials-testing-lab">Materials Testing Lab (Practical)</option>
+                    <option value="cae-drawing-lab">Computer-aided Civil Engineering Drawing Lab (Practical)</option>
+                    <option value="geology-for-engineers">Geology for Engineers</option>
+                    <option value="disaster-preparedness">Disaster Preparedness & Management</option>
+                    <option value="basics-fluid-mechanics">Basics of Fluid Mechanics</option>
+                    <option value="basics-solid-mechanics">Basics of Solid Mechanics</option>
+                    <option value="surveying-geomatics">Surveying & Engineering Geomatics</option>
+                    <option value="fluid-mechanics-lab">Fluid Mechanics Lab (Practical)</option>
+                    <option value="surveying-lab">Surveying Lab (Practical)</option>
+                    <option value="surveying-camp">Surveying Camp</option>
+                    <option value="advanced-mechanics-materials">Advanced Mechanics of Materials</option>
+                    <option value="structural-engineering">Structural Engineering</option>
+                    <option value="geotechnical-engineering">Geotechnical Engineering</option>
+                    <option value="environmental-engineering-management">Environmental Engineering and Management</option>
+                    <option value="transportation-engineering">Transportation Engineering Concepts</option>
+                    <option value="geotech-lab">Geotechnical Engineering Lab (Practical)</option>
+                    <option value="transportation-lab">Transportation Engineering Lab (Practical)</option>
+                    <option value="environmental-lab">Environmental Engineering Lab (Practical)</option>
+                    <option value="design-rc-structures">Design of Reinforced Concrete Structures</option>
+                    <option value="hydraulic-engineering">Hydraulic Engineering</option>
+                    <option value="hydrology-water-resources">Hydrology & Water Resources Engineering</option>
+                    <option value="hydraulic-lab">Hydraulic Engineering Lab (Practical)</option>
+                    <option value="construction-management">Construction Engineering & Management</option>
+                    <option value="engineering-economics-estimation">Engineering Economics, Estimation & Costing</option>
+                    <option value="economics-lab">Engineering Economics, Estimation & Costing Lab (Practical)</option>
+                    <option value="industrial-training-project">Industrial Training with projects (Project)</option>
+                    <option value="thermodynamics">Thermodynamics</option>
+                    <option value="strength-materials-i">Strength of Materials-I</option>
+                    <option value="fluid-mechanics-machines">Fluid Mechanics and Machines</option>
+                    <option value="strength-materials-lab">Strength of Materials Lab</option>
+                    <option value="fluid-mech-machines-lab">Fluid Mechanics and Machines Lab</option>
+                    <option value="applied-thermodynamics">Applied Thermodynamics</option>
+                    <option value="materials-engineering">Materials Engineering</option>
+                    <option value="kinematics-of-machines">Kinematics of Machines</option>
+                    <option value="strength-materials-ii">Strength of Materials-II</option>
+                    <option value="manufacturing-processes">Manufacturing Processes</option>
+                    <option value="thermal-lab-i">Thermal Lab-I</option>
+                    <option value="materials-eng-lab">Materials Engineering Lab</option>
+                    <option value="kinematics-lab">Kinematics of Machines Lab</option>
+                    <option value="heat-mass-transfer">Heat and Mass Transfer</option>
+                    <option value="dynamics-of-machines">Dynamics of Machines</option>
+                    <option value="design-machine-elements-i">Design of Machine Elements - I</option>
+                    <option value="refrigeration-ac">Refrigeration and Air-conditioning</option>
+                    <option value="industrial-engineering">Industrial Engineering</option>
+                    <option value="thermal-lab-ii">Thermal Lab-II</option>
+                    <option value="dynamics-lab">Dynamics of Machines Lab</option>
+                    <option value="cad-cam">CAD/ CAM</option>
+                    <option value="manufacturing-technology">Manufacturing Technology</option>
+                    <option value="design-machine-elements-ii">Design of Machine Elements - II</option>
+                    <option value="cad-cam-lab">CAD/ CAM Lab</option>
+                    <option value="automation-manufacturing">Automation in Manufacturing</option>
+                    <option value="operations-research">Operations Research</option>
+                    <option value="industrial-training">Industrial Training</option>
+                    <option value="visionary-learning-manufacturing">Visionary Learning in Manufacturing</option>
+                    <option value="product-design-development">Product Design and Development</option>
+                    <option value="internal-combustion-engines">Internal Combustion Engines</option>
+                    <option value="gas-dynamics-jet-propulsion">Gas Dynamics and Jet Propulsion</option>
+                    <option value="welding-technology">Welding Technology</option>
+                    <option value="mechatronics-systems">Mechatronics Systems</option>
+                    <option value="flexible-manufacturing-systems">Flexible Manufacturing Systems</option>
+                    <option value="ram">Reliability, Availability and Maintainability</option>
+                    <option value="principles-management">Principles of Management</option>
+                    <option value="aircraft-technology">Aircraft Technology</option>
+                    <option value="numeric-control-robotics">Numeric Control of Machine Tools, Robotics and Rapid Prototyping</option>
+                    <option value="industrial-tribology">Industrial Tribology and Lubrication</option>
+                    <option value="electric-vehicle-transmission">Electric Vehicle and Transmission System</option>
+                    <option value="maintenance-engineering">Maintenance Engineering and Management</option>
+                    <option value="tqm">Total Quality Management</option>
+                    <option value="non-conv-energy-utilization">Non-Conventional Energy Resources Utilization</option>
+                    <option value="air-conditioning-equipments">Air Conditioning Equipments</option>
+                    <option value="tool-design">Tool Design</option>
+                    <option value="acoustics-vibrations">Acoustics and Vibrations</option>
+                    <option value="new-venture-creation">New Venture Creation</option>
+                    <option value="project-management">Project Management</option>
+                    <option value="automobile-engineering">Automobile Engineering</option>
+                    <option value="design-thermal-systems">Design of Thermal Systems</option>
+                    <option value="metallurgy">Metallurgy</option>
+                    <option value="composite-materials">Composite Materials</option>
+                    <option value="modeling-simulation-optimization">Modeling, Simulation and Optimization</option>
+                    <option value="marketing-management">Marketing Management</option>
+                    <option value="process-planning-cost-estimation">Process Planning and Cost Estimation</option>
+                    <option value="quality-management-systems">Quality Management Systems</option>
+                    <option value="power-plant-engineering">Power Plant Engineering</option>
+                    <option value="energy-conservation-management">Energy Conservation and Management</option>
+                    <option value="micro-nano-manufacturing">Micro and Nano Manufacturing</option>
+                    <option value="finite-element-analysis">Finite Element Analysis</option>
+                  </optgroup>
+                </select>
+              </label>
+              <label>Branch
+                <select name="Branch" id="noteBranch" required>
+                  <option value="">Select Branch</option>
+                  <option value="computer">Computer Engineering</option>
+                  <option value="electrical">Electrical Engineering</option>
+                  <option value="mechanical">Mechanical Engineering</option>
+                  <option value="civil">Civil Engineering</option>
+                </select>
               </label>
               <label>Title
                 <input name="title" id="noteTitle" placeholder="Lecture 05 - Trees" required />
@@ -84,6 +305,226 @@
             </form>
         </div>
 
+        <div class="filter-controls">
+          <select id="notesSubjectFilter">
+            <option value="">All Subjects</option>
+            <optgroup label="Fundamentals & Sem 1">
+              <option value="physics-waves">Physics (Waves and Optics)</option>
+              <option value="chemistry">Chemistry</option>
+              <option value="mathematics-1">Mathematics-I (Calculus and Differential Equations)</option>
+              <option value="engineering-graphics-design">Engineering Graphics & Design</option>
+              <option value="programming-problem-solving">Programming for Problem Solving</option>
+              <option value="workshop-i">Workshop-I</option>
+              <option value="physics-lab">Physics Lab</option>
+              <option value="pps-lab">Programming for Problem Solving Lab</option>
+            </optgroup>
+
+            <optgroup label="Sem 2">
+              <option value="mathematics-2">Mathematics-II (Linear Algebra, Transform Calculus and Numerical Methods)</option>
+              <option value="basic-electrical-engineering">Basic Electrical Engineering</option>
+              <option value="bme">Basic Mechanical Engineering</option>
+              <option value="workshop-ii">Workshop-II</option>
+              <option value="english">English</option>
+              <option value="bee-lab">Basic Electrical Engineering Lab</option>
+              <option value="chemistry-lab">Chemistry Lab</option>
+              <option value="english-lab">English Lab</option>
+            </optgroup>
+
+            <optgroup label="Sem 3">
+              <option value="electrical-circuit-analysis">Electrical Circuit Analysis</option>
+              <option value="analog-electronics-circuits">Analog Electronics Circuits</option>
+              <option value="electrical-machines-i">Electrical Machines-I</option>
+              <option value="electromagnetic-fields">Electromagnetic Fields</option>
+              <option value="engineering-mechanics">Engineering Mechanics</option>
+              <option value="mathematics-3">Mathematics-III (Probability and Statistics)</option>
+              <option value="constitution-india">Constitution of India / Essence of Indian Traditional Knowledge</option>
+              <option value="analog-electronics-lab">Analog Electronics Circuit Lab</option>
+              <option value="electrical-machines-i-lab">Electrical Machines-I Lab</option>
+              <option value="electrical-workshop-iii">Electrical Workshop-III</option>
+              <option value="dsa">Data Structures & Algorithms</option>
+              <option value="etc">Effective Technical Communication</option>
+              <option value="project-1">Project-I (Capstone)</option>
+              <option value="it-workshop">IT Workshop</option>
+              <option value="dsa-lab">DSA Lab</option>
+            </optgroup>
+
+            <optgroup label="Sem 4">
+              <option value="digital-electronics">Digital Electronics</option>
+              <option value="electrical-machines-ii">Electrical Machines-II</option>
+              <option value="power-electronics">Power Electronics</option>
+              <option value="signals-and-systems">Signals and Systems</option>
+              <option value="digital-electronics-lab">Digital Electronics Lab</option>
+              <option value="electrical-machines-ii-lab">Electrical Machines-II Lab</option>
+              <option value="power-electronics-lab">Power Electronics Lab</option>
+              <option value="electrical-workshop-iv">Electrical Workshop-IV</option>
+              <optgroup label="Program Elective-I (choose one)">
+                <option value="pe1-electrical-energy-conservation">Electrical Energy Conservation & Auditing</option>
+                <option value="pe1-industrial-electrical-systems">Industrial Electrical Systems</option>
+                <option value="pe1-computer-architecture">Computer Architecture</option>
+              </optgroup>
+              <option value="environmental-sciences">Environmental Sciences (Mandatory)</option>
+              <option value="dm">Discrete Mathematics</option>
+              <option value="coa">Computer Organization & Architecture</option>
+              <option value="os">Operating Systems</option>
+              <option value="daa">Design & Analysis of Algorithms</option>
+              <option value="efe">Economics for Engineers</option>
+              <option value="evsc">Environmental Sciences</option>
+              <option value="project-2">Project-II (Capstone)</option>
+              <option value="labs-2">Labs Sem4: COA Lab, OS Lab, DAA Lab</option>
+            </optgroup>
+
+            <optgroup label="Sem 5">
+              <option value="power-systems-i">Power Systems-I (Apparatus and Modelling)</option>
+              <option value="control-systems">Control Systems</option>
+              <option value="microprocessors">Microprocessors</option>
+              <option value="biology">Biology (Common to all branches)</option>
+              <option value="power-systems-lab-i">Power Systems Lab-I</option>
+              <option value="control-systems-lab">Control Systems Lab</option>
+              <option value="microprocessors-lab">Microprocessors Lab</option>
+              <option value="electrical-workshop-v">Electrical Workshop-V</option>
+              <option value="minor-project-i">Minor Project-I</option>
+              <option value="dbms">Database Management Systems</option>
+              <option value="cn">Computer Networks</option>
+              <option value="se">Software Engineering</option>
+              <option value="toc">Theory of Computation</option>
+              <option value="pe-1">Professional Elective-I</option>
+              <option value="uhv">Universal Human Values (VAC)</option>
+              <option value="labs-3">Labs Sem5: DBMS Lab, CN Lab, Software Engineering Lab</option>
+            </optgroup>
+
+            <optgroup label="Sem 6">
+              <option value="power-systems-ii">Power Systems-II (Operation and Control)</option>
+              <option value="electrical-measurements-instrumentation">Electrical Measurements & Instrumentation</option>
+              <option value="electronics-design">Electronics Design</option>
+              <option value="power-systems-lab-ii">Power Systems Lab-II</option>
+              <option value="emi-lab">Electrical Measurements & Instrumentation Lab</option>
+              <option value="electronics-design-lab">Electronics Design Lab</option>
+              <option value="electrical-workshop-vi">Electrical Workshop-VI</option>
+              <option value="social-work">Social Work (Value-Added Course)</option>
+              <option value="shrimad-bhagavad-gita">Message from Shrimad Bhagavad Gita</option>
+              <option value="essence-indian-traditional-knowledge">Essence of Indian Traditional Knowledge</option>
+              <option value="open-elective-v">Open Elective-V</option>
+              <option value="ai">Artificial Intelligence</option>
+              <option value="cd">Compiler Design</option>
+              <option value="wt">Web Technologies</option>
+              <option value="pe-2">Professional Elective-II</option>
+              <option value="pe-3">Professional Elective-III</option>
+              <option value="labs-4">Labs Sem6: AI Lab, Compiler Lab, Web Tech Lab</option>
+            </optgroup>
+
+            <!-- Generic program electives and broad topics -->
+            <optgroup label="Program Electives / Other Topics">
+              <option value="program-elective-i">Program Elective-I</option>
+              <option value="program-elective-ii">Program Elective-II</option>
+              <option value="program-elective-iii">Program Elective-III</option>
+              <option value="program-elective-iv">Program Elective-IV</option>
+              <option value="program-elective-v">Program Elective-V</option>
+              <option value="project-3">Project-III</option>
+              <option value="pe-4">Professional Elective-IV</option>
+              <option value="pe-5">Professional Elective-V</option>
+              <option value="pe-6">Professional Elective-VI</option>
+              <option value="project-4">Project-IV</option>
+              <option value="ob-fa">Organizational Behaviour / Finance & Accounting (HSMC)</option>
+              <option value="project-5">Project-V (Capstone Project)</option>
+              <option value="basic-electronics">Basic Electronics</option>
+              <option value="basics-of-civil-engineering">Basics of Civil Engineering</option>
+              <option value="building-materials-testing">Building Materials and Testing</option>
+              <option value="materials-testing-lab">Materials Testing Lab (Practical)</option>
+              <option value="cae-drawing-lab">Computer-aided Civil Engineering Drawing Lab (Practical)</option>
+              <option value="geology-for-engineers">Geology for Engineers</option>
+              <option value="disaster-preparedness">Disaster Preparedness & Management</option>
+              <option value="basics-fluid-mechanics">Basics of Fluid Mechanics</option>
+              <option value="basics-solid-mechanics">Basics of Solid Mechanics</option>
+              <option value="surveying-geomatics">Surveying & Engineering Geomatics</option>
+              <option value="fluid-mechanics-lab">Fluid Mechanics Lab (Practical)</option>
+              <option value="surveying-lab">Surveying Lab (Practical)</option>
+              <option value="surveying-camp">Surveying Camp</option>
+              <option value="advanced-mechanics-materials">Advanced Mechanics of Materials</option>
+              <option value="structural-engineering">Structural Engineering</option>
+              <option value="geotechnical-engineering">Geotechnical Engineering</option>
+              <option value="environmental-engineering-management">Environmental Engineering and Management</option>
+              <option value="transportation-engineering">Transportation Engineering Concepts</option>
+              <option value="geotech-lab">Geotechnical Engineering Lab (Practical)</option>
+              <option value="transportation-lab">Transportation Engineering Lab (Practical)</option>
+              <option value="environmental-lab">Environmental Engineering Lab (Practical)</option>
+              <option value="design-rc-structures">Design of Reinforced Concrete Structures</option>
+              <option value="hydraulic-engineering">Hydraulic Engineering</option>
+              <option value="hydrology-water-resources">Hydrology & Water Resources Engineering</option>
+              <option value="hydraulic-lab">Hydraulic Engineering Lab (Practical)</option>
+              <option value="construction-management">Construction Engineering & Management</option>
+              <option value="engineering-economics-estimation">Engineering Economics, Estimation & Costing</option>
+              <option value="economics-lab">Engineering Economics, Estimation & Costing Lab (Practical)</option>
+              <option value="industrial-training-project">Industrial Training with projects (Project)</option>
+              <option value="thermodynamics">Thermodynamics</option>
+              <option value="strength-materials-i">Strength of Materials-I</option>
+              <option value="fluid-mechanics-machines">Fluid Mechanics and Machines</option>
+              <option value="strength-materials-lab">Strength of Materials Lab</option>
+              <option value="fluid-mech-machines-lab">Fluid Mechanics and Machines Lab</option>
+              <option value="applied-thermodynamics">Applied Thermodynamics</option>
+              <option value="materials-engineering">Materials Engineering</option>
+              <option value="kinematics-of-machines">Kinematics of Machines</option>
+              <option value="strength-materials-ii">Strength of Materials-II</option>
+              <option value="manufacturing-processes">Manufacturing Processes</option>
+              <option value="thermal-lab-i">Thermal Lab-I</option>
+              <option value="materials-eng-lab">Materials Engineering Lab</option>
+              <option value="kinematics-lab">Kinematics of Machines Lab</option>
+              <option value="heat-mass-transfer">Heat and Mass Transfer</option>
+              <option value="dynamics-of-machines">Dynamics of Machines</option>
+              <option value="design-machine-elements-i">Design of Machine Elements - I</option>
+              <option value="refrigeration-ac">Refrigeration and Air-conditioning</option>
+              <option value="industrial-engineering">Industrial Engineering</option>
+              <option value="thermal-lab-ii">Thermal Lab-II</option>
+              <option value="dynamics-lab">Dynamics of Machines Lab</option>
+              <option value="cad-cam">CAD/ CAM</option>
+              <option value="manufacturing-technology">Manufacturing Technology</option>
+              <option value="design-machine-elements-ii">Design of Machine Elements - II</option>
+              <option value="cad-cam-lab">CAD/ CAM Lab</option>
+              <option value="automation-manufacturing">Automation in Manufacturing</option>
+              <option value="operations-research">Operations Research</option>
+              <option value="industrial-training">Industrial Training</option>
+              <option value="visionary-learning-manufacturing">Visionary Learning in Manufacturing</option>
+              <option value="product-design-development">Product Design and Development</option>
+              <option value="internal-combustion-engines">Internal Combustion Engines</option>
+              <option value="gas-dynamics-jet-propulsion">Gas Dynamics and Jet Propulsion</option>
+              <option value="welding-technology">Welding Technology</option>
+              <option value="mechatronics-systems">Mechatronics Systems</option>
+              <option value="flexible-manufacturing-systems">Flexible Manufacturing Systems</option>
+              <option value="ram">Reliability, Availability and Maintainability</option>
+              <option value="principles-management">Principles of Management</option>
+              <option value="aircraft-technology">Aircraft Technology</option>
+              <option value="numeric-control-robotics">Numeric Control of Machine Tools, Robotics and Rapid Prototyping</option>
+              <option value="industrial-tribology">Industrial Tribology and Lubrication</option>
+              <option value="electric-vehicle-transmission">Electric Vehicle and Transmission System</option>
+              <option value="maintenance-engineering">Maintenance Engineering and Management</option>
+              <option value="tqm">Total Quality Management</option>
+              <option value="non-conv-energy-utilization">Non-Conventional Energy Resources Utilization</option>
+              <option value="air-conditioning-equipments">Air Conditioning Equipments</option>
+              <option value="tool-design">Tool Design</option>
+              <option value="acoustics-vibrations">Acoustics and Vibrations</option>
+              <option value="new-venture-creation">New Venture Creation</option>
+              <option value="project-management">Project Management</option>
+              <option value="automobile-engineering">Automobile Engineering</option>
+              <option value="design-thermal-systems">Design of Thermal Systems</option>
+              <option value="metallurgy">Metallurgy</option>
+              <option value="composite-materials">Composite Materials</option>
+              <option value="modeling-simulation-optimization">Modeling, Simulation and Optimization</option>
+              <option value="marketing-management">Marketing Management</option>
+              <option value="process-planning-cost-estimation">Process Planning and Cost Estimation</option>
+              <option value="quality-management-systems">Quality Management Systems</option>
+              <option value="power-plant-engineering">Power Plant Engineering</option>
+              <option value="energy-conservation-management">Energy Conservation and Management</option>
+              <option value="micro-nano-manufacturing">Micro and Nano Manufacturing</option>
+              <option value="finite-element-analysis">Finite Element Analysis</option>
+            </optgroup>
+          </select>
+          <select id="notesBranchFilter">
+            <option value="">All Branches</option>
+            <option value="computer">Computer Engineering</option>
+            <option value="electrical">Electrical Engineering</option>
+            <option value="mechanical">Mechanical Engineering</option>
+            <option value="civil">Civil Engineering</option>
+          </select>
+        </div>
         <h3>Your Notes</h3>
         <div id="notesList" class="list"></div>
       </section>
@@ -275,6 +716,7 @@
 </body>
 
 </html>
+
 
 
 
