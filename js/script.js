@@ -968,18 +968,51 @@ renderGlobalLinks();
     }, 18);
   }
 
+  // --- Distance & Time display setup ---
+  const pathInfo = document.createElement('div');
+  pathInfo.id = 'pathInfo';
+  pathInfo.style.marginTop = '10px';
+  pathInfo.style.fontWeight = '600';
+  document.querySelector('#map .map-wrap').after(pathInfo);
+
+  function computeDistanceMeters(points) {
+    let total = 0;
+    for (let i = 0; i < points.length - 1; i++) {
+      const dx = points[i + 1].x - points[i].x;
+      const dy = points[i + 1].y - points[i].y;
+      total += Math.hypot(dx, dy);
+    }
+    return total * 0.367; // 1 px ≈ 0.367 m (based on 20-acre campus)
+  }
+
+  function formatTime(seconds) {
+    const m = Math.floor(seconds / 60);
+    const s = Math.round(seconds % 60);
+    return `${m} min ${s} sec`;
+  }
+
   navigateBtn.addEventListener('click', () => {
     const from = mapFrom.value;
     const to = mapTo.value;
-    if (!from || !to || from === to) { alert('Select different From and To'); return; }
-    const pt = findPath(from, to);
-    drawPath(pt);
-    animateWalker(pt);
+    if (!from || !to || from === to) {
+      alert('Select different From and To');
+      return;
+    }
+    const pts = findPath(from, to);
+    drawPath(pts);
+    animateWalker(pts);
+
+    // Compute & show distance/time
+    const distMeters = computeDistanceMeters(pts);
+    const speedMps = 5 * 1000 / 3600; // 5 km/h
+    const timeSec = distMeters / speedMps;
+    pathInfo.textContent = `Distance: ${distMeters.toFixed(1)} m | Estimated time: ${formatTime(timeSec)}`;
   });
 
   resetMapBtn.addEventListener('click', () => {
     pathsLayer.innerHTML = '';
-    walker.setAttribute('visibility','hidden');
+    walker.setAttribute('visibility', 'hidden');
+    pathInfo.textContent = '';
   });
 
   Object.keys(nodes).forEach(name => {
@@ -1051,6 +1084,7 @@ renderGlobalLinks();
     }
   };
 });
+
 
 
 
