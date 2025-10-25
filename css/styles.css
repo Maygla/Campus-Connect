@@ -274,3 +274,120 @@ svg#campusMap{width:100%;height:420px;display:block}
   box-shadow:none;
 }
 
+/* ====== Calendar & Schedule Styling ====== */
+#schedule h2 {
+  color: var(--accent);
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+
+#branchFilter {
+  background: #fff;
+  border: 1px solid rgba(43, 124, 255, 0.12);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-weight: 500;
+  transition: 0.2s ease;
+}
+#branchFilter:hover {
+  box-shadow: 0 6px 18px rgba(43,124,255,0.08);
+  transform: translateY(-1px);
+}
+
+/* Admin Add Event Card */
+#adminScheduleForm {
+  border: 1px solid rgba(9,30,66,0.05);
+  box-shadow: 0 8px 22px rgba(43,124,255,0.08);
+  background: linear-gradient(180deg, #ffffff, #f7fbff);
+  transition: all 0.3s ease;
+}
+#adminScheduleForm:hover {
+  transform: translateY(-3px);
+}
+
+#adminScheduleForm h3 {
+  margin-top: 0;
+  color: var(--accent);
+  font-size: 18px;
+}
+
+#addEventForm input,
+#addEventForm select {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 14px;
+  background: #fff;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+#addEventForm input:focus,
+#addEventForm select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0,191,166,0.15);
+  outline: none;
+}
+
+#addEventForm button[type="submit"] {
+  background: var(--accent);
+  color: #fff;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 8px 18px rgba(0,191,166,0.12);
+}
+#addEventForm button[type="submit"]:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(0,191,166,0.18);
+}
+
+/* Status message animation */
+#eventStatusMsg {
+  margin-top: 8px;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+/* ====== FullCalendar Custom Look ====== */
+.fc {
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 6px 18px rgba(9,30,66,0.06);
+  border: 1px solid rgba(9,30,66,0.04);
+}
+
+.fc-toolbar-title {
+  font-size: 20px !important;
+  color: var(--accent);
+}
+
+.fc-button-primary {
+  background: var(--accent) !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+}
+.fc-button-primary:hover {
+  background: #029782 !important;
+}
+
+.fc-daygrid-day.fc-day-today {
+  background: rgba(0,191,166,0.08);
+  border-radius: 6px;
+}
+
+.fc-event {
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 4px 6px !important;
+  font-size: 13px !important;
+  color: #fff !important;
+  background: linear-gradient(135deg, #00bfa6, #007f6f) !important;
+  box-shadow: 0 4px 10px rgba(0,191,166,0.25);
+}
+
+
