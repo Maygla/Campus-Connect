@@ -143,42 +143,48 @@
 
       <!-- Schedule -->
       <section id="schedule" class="tab">
-        <h2>Schedule & Events</h2>
-        <div class="card">
-          <form id="eventForm">
-            <input id="eventTitle" placeholder="Event / Class title" required />
-            <input id="eventDate" type="date" required />
-            <input id="eventTime" type="time" />
-            <select id="eventType">
-              <option value="class">Class</option>
-              <option value="exam">Exam</option>
-              <option value="event">Event</option>
-              <option value="workshop">Workshop</option>
-            </select>
-            <select id="eventBranch" required>
-                <option value="all">All Branches</option>
-                <option value="cse">Computer Engineering</option>
-                <option value="me">Mechanical Engineering</option>
-                <option value="ee">Electrical Engineering</option>
-                <option value="ce">Civil Engineering</option>
-            </select>
-            <div class="row">
-              <button type="submit">Add</button>
-              <button type="button" id="importSampleSchedule">Import Sample</button>
-            </div>
-          </form>
-        </div>
-        <div class="filter-controls">
-          <select id="scheduleFilter">
-                  <option value="all">All Branches</option>
-                  <option value="cse">Computer Engineering</option>
-                  <option value="me">Mechanical Engineering</option>
-                  <option value="ee">Electrical Engineering</option>
-                  <option value="ce">Civil Engineering</option>
+        <h2>Schedule & Events Calendar</h2>
+
+        <!-- Branch Filter (visible to all) -->
+        <div style="margin-bottom: 12px;">
+          <label for="branchFilter"><strong>Filter by Branch:</strong></label>
+          <select id="branchFilter" style="margin-left:6px; padding:4px 8px;">
+            <option value="all">All Branches</option>
+            <option value="cse">Computer</option>
+            <option value="me">Mechanical</option>
+            <option value="ee">Electrical</option>
+            <option value="ce">Civil</option>
           </select>
         </div>
 
-        <div id="scheduleList" class="list"></div>
+        <!-- Admin-only form -->
+        <div id="adminScheduleForm" class="card" style="margin-bottom: 16px; display: none;">
+          <h3>Add New Event</h3>
+          <form id="addEventForm" class="row" style="flex-wrap: wrap; gap: 8px;">
+            <input type="text" id="eventTitleInput" placeholder="Event title" required />
+            <input type="date" id="eventDateInput" required />
+            <input type="time" id="eventTimeInput" />
+            <input type="text" id="eventVenueInput" placeholder="Venue (optional)" />
+            <select id="eventTypeInput">
+              <option value="event">Event</option>
+              <option value="class">Class</option>
+              <option value="exam">Exam</option>
+              <option value="workshop">Workshop</option>
+            </select>
+            <select id="eventBranchInput">
+              <option value="all">All Branches</option>
+              <option value="cse">Computer</option>
+              <option value="me">Mechanical</option>
+              <option value="ee">Electrical</option>
+              <option value="ce">Civil</option>
+            </select>
+            <button type="submit" style="background:#2563eb;color:white;border:none;padding:6px 12px;border-radius:8px;">Add</button>
+          </form>
+          <div id="eventStatusMsg" style="margin-top:8px;font-weight:500;"></div>
+        </div>
+
+        <!-- Calendar -->
+        <div id="calendar" style="max-width:900px;margin:auto;"></div>
       </section>
 
 
@@ -239,9 +245,13 @@
 
   <!-- main site script -->
   <script src="js/script.js"></script>
+    <!-- FullCalendar (keep at bottom for correct load order) -->
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 </body>
 
 </html>
+
 
 
 
