@@ -141,6 +141,60 @@ addBtn?.addEventListener('click', async () => {
 
 // initial render call (replace any earlier renderAccess() call as needed)
 renderAccess();
+// ✅ NEW CODE: Global Quick Links (Admin-controlled)
+async function renderGlobalLinks() {
+  const container = document.getElementById('globalLinksContainer');
+  if (!container) return;
+
+  let allLinks = [];
+  try {
+    allLinks = await window.CCDB.listAccessLinks();
+  } catch (err) {
+    console.error('Failed to load global links:', err);
+    container.innerHTML = `<div class="item muted">Error loading global links.</div>`;
+    return;
+  }
+
+  // Filter only global (no owner)
+  const globals = allLinks.filter(l => !l.owner);
+  if (!globals.length) {
+    container.innerHTML = `<div class="item muted">No global links yet.</div>`;
+  } else {
+    container.innerHTML = globals.map(g => `
+      <div class="item" style="display:flex;justify-content:space-between;align-items:center;width:100%;">
+        <a href="${g.url}" target="_blank" rel="noopener">${escapeHtml(g.title)}</a>
+        ${isAdmin() ? `<button data-id="${g.id}" class="delete-global" style="background:#ef4444">Delete</button>` : ''}
+      </div>
+    `).join('');
+  }
+
+  // delete buttons (admin only)
+  if (isAdmin()) {
+    container.querySelectorAll('.delete-global').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (!confirm('Delete this global link?')) return;
+        await window.CCDB.deleteAccessLink(btn.dataset.id);
+        renderGlobalLinks();
+      });
+    });
+  }
+
+  // show/hide admin controls
+  const adminBox = document.getElementById('adminGlobalLinks');
+  if (adminBox) adminBox.style.display = isAdmin() ? 'block' : 'none';
+}
+
+document.getElementById('addGlobalLinkBtn')?.addEventListener('click', async () => {
+  if (!isAdmin()) return alert('Only admin can add global links.');
+  const title = prompt('Enter link title:');
+  const url = prompt('Enter link URL (include https://):');
+  if (!title || !url) return;
+  await window.CCDB.addAccessLink({ title, url }); // owner=null → global
+  renderGlobalLinks();
+});
+
+// call global render too
+renderGlobalLinks();
 
   /* ========= Notes / File Upload ========= */
   const notesListEl = document.getElementById('notesList');
@@ -1005,6 +1059,7 @@ renderAccess();
     }
   };
 });
+
 
 
 
