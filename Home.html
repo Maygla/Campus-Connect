@@ -187,48 +187,72 @@
         <div id="calendar" style="max-width:900px;margin:auto;"></div>
       </section>
 
+        <!-- Map -->
+        <section id="map" class="tab">
+          <h2>Interactive Campus Map</h2>
+          <p>Select start and destination and press "Navigate" to see animation.</p>
 
-      <!-- Map -->
-      <section id="map" class="tab">
-        <h2>Interactive Campus Map</h2>
-        <p>Select start and destination and press "Navigate" to see animation.</p>
-        <div class="map-controls card">
-          <label>From
-            <select id="mapFrom"></select>
-          </label>
-          <label>To
-            <select id="mapTo"></select>
-          </label>
-          <div class="row">
-            <button id="navigateBtn">Navigate</button>
-            <button id="resetMapBtn">Reset</button>
+          <div class="map-controls card">
+            <label>From
+              <select id="mapFrom"></select>
+            </label>
+            <label>To
+              <select id="mapTo"></select>
+            </label>
+            <div class="row">
+              <button id="navigateBtn">Navigate</button>
+              <button id="resetMapBtn">Reset</button>
+            </div>
           </div>
-        </div>
 
-        <div class="map-wrap">
-          <!-- Inline SVG campus mockup -->
-          <svg id="campusMap" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid meet">
-            <defs>
-              <style>
-                .pathline { fill:none; stroke:#f63b3b; stroke-width:4; opacity:0.8 }
-                .pathAnim { fill:none; stroke:#06b; stroke-width:8; stroke-linecap:round; opacity:0.9 }
-              </style>
-            </defs>
-            <!-- background image for the campus map (put your image at images/campus-map-bg.png) -->
-            <image id="campusBg" x="0" y="0" width="1000" height="600" href="images/campus-map-bg.png" preserveAspectRatio="xMidYMid meet" />
+          <!-- ✅ Map wrapper with overlay info inside -->
+          <div class="map-wrap" style="position: relative;">
+            <!-- Inline SVG campus mockup -->
+            <svg id="campusMap" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid meet">
+              <defs>
+                <style>
+                  .pathline { fill: none; stroke: #f63b3b; stroke-width: 4; opacity: 0.8; }
+                  .pathAnim { fill: none; stroke: #06b; stroke-width: 8; stroke-linecap: round; opacity: 0.9; }
+                </style>
+              </defs>
 
-            <!-- Paths (hidden until used) -->
-            <g id="pathsLayer"></g>
+              <!-- background image for the campus map -->
+              <image id="campusBg"
+                    x="0" y="0" width="1000" height="600"
+                    href="images/campus-map-bg.png"
+                    preserveAspectRatio="xMidYMid meet" />
 
-            <!-- Animated dot -->
-            <circle id="walker" r="8" fill="#ff0066" stroke="#fff" stroke-width="2" visibility="hidden"/>
-          </svg>
-        </div>
+              <!-- Paths (drawn dynamically) -->
+              <g id="pathsLayer"></g>
 
-        <div id="mapLegend" class="card">
-          <strong>Locations:</strong> Gate, Library, Shakuntalam Hall, Auditorium/Management dept., CV RAMAN/Science Block, Cafeteria(Shri. krishan bhawan), Mechanical engineering dept., Computer engineering dept., Electrical engineering dept., Civil engineering dept., New Building, V.C. OFFICE, Administravtive, Girls hostel, Temple, Bank, Gate-2.
-        </div>
-      </section>
+              <!-- Animated dot -->
+              <circle id="walker" r="8" fill="#ff0066" stroke="#fff" stroke-width="2" visibility="hidden" />
+            </svg>
+
+            <!-- 👇 Distance & time overlay inside map -->
+            <div id="mapOverlayInfo"
+                style="
+                  position: absolute;
+                  top: 10px;
+                  right: 10px;
+                  background: rgba(0, 0, 0, 0.6);
+                  color: #fff;
+                  padding: 8px 12px;
+                  border-radius: 8px;
+                  font-size: 14px;
+                  font-weight: 600;
+                  z-index: 10;
+                  pointer-events: none;
+                  display: none;">
+            </div>
+          </div>
+
+          <div id="mapLegend" class="card" style="margin-top: 10px;">
+            <strong>Locations:</strong> Gate, Library, Shakuntalam Hall, Auditorium/Management dept., CV RAMAN/Science Block,
+            Cafeteria (Shri. krishan bhawan), Mechanical engineering dept., Computer engineering dept.,
+            Electrical engineering dept., Civil engineering dept., New Building, V.C. OFFICE, Girls hostel, Temple, Bank, Gate-2.
+          </div>
+        </section>
     </section>
   </main>
 
@@ -251,6 +275,7 @@
 </body>
 
 </html>
+
 
 
 
