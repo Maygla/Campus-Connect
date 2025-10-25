@@ -37,16 +37,16 @@
         <h2>Quick Access</h2>
         <p>Open common college tools from one place.</p>
         <div class="card-grid" id="accessLinks">
-            <div class="card" id="globalLinks" style="padding:10px;">
-              <strong>Quick Links</strong>
-              <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px">
-                <a href="https://jcboseust.ac.in/#" target="_blank" rel="noopener">University Portal</a>
-                <a href="https://jcboseustymca.co.in/" target="_blank" rel="noopener">ERP Login</a>
-                <a href="https://jcboseust.ac.in/login?next=/app" target="_blank" rel="noopener">CMS/Web login</a>
-                <a href="https://jcboseust.refread.com/#/home" target="_blank" rel="noopener">e-Library</a>
-                <a href="https://www.instagram.com/jcboseustofficial/" target="_blank" rel="noopener">Instagram</a>
-              </div>
+          <div class="card" id="globalLinks" style="padding:10px;">
+            <strong>Quick Links</strong>
+            <div id="globalLinksContainer" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px"></div>
+
+            <!-- Admin-only section (hidden by JS for non-admins) -->
+            <div id="adminGlobalLinks" style="margin-top:10px;display:none;">
+              <button id="addGlobalLinkBtn">+ Add Global Link</button>
             </div>
+          </div>
+
   
             <div class="card" id="personalCard" style="padding:10px;">
               <strong>Your Links</strong>
@@ -242,6 +242,7 @@
 </body>
 
 </html>
+
 
 
 
