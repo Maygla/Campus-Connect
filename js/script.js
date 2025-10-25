@@ -202,10 +202,21 @@ renderGlobalLinks();
   const sampleNotesBtn = document.getElementById('importSampleNotes');
   
   async function renderNotes() {
+    const selectedSubject = document.getElementById('notesSubjectFilter')?.value || '';
+    const selectedBranch = document.getElementById('notesBranchFilter')?.value || '';
+
     if (hasDB) {
-      const notes = await window.CCDB.listNotes();
+      let notes = await window.CCDB.listNotes();
+      
+      // Apply filters
+      notes = notes.filter(note => {
+        const matchesSubject = !selectedSubject || note.subject === selectedSubject;
+        const matchesBranch = !selectedBranch || note.branch === selectedBranch;
+        return matchesSubject && matchesBranch;
+      });
+
       if (!notes.length) {
-        notesListEl.innerHTML = `<div class="item">No notes yet. Upload using the form above.</div>`;
+        notesListEl.innerHTML = `<div class="item">No notes found matching the selected filters.</div>`;
         return;
       }
       notesListEl.innerHTML = notes.map((n) => `
@@ -278,6 +289,7 @@ renderGlobalLinks();
     const title = document.getElementById('noteTitle').value.trim();
     const fileInput = document.getElementById('noteFile');
     const driveLink = document.getElementById('noteDriveLink').value.trim();
+    const branch = document.getElementById('noteBranch').value.trim();
     const file = fileInput.files?.[0];
   
     if (!file && !driveLink) {
@@ -288,7 +300,7 @@ renderGlobalLinks();
     if (hasDB) {
       const owner = (window.CCAuth && window.CCAuth.currentUser) ? window.CCAuth.currentUser() : null;
       try {
-        await window.CCDB.uploadNote({ file, subject, title, owner, driveLink });
+        await window.CCDB.uploadNote({ file, subject, title, branch, owner, driveLink });
         uploadForm.reset();
         renderNotes();
       } catch (err) {
@@ -302,6 +314,7 @@ renderGlobalLinks();
         filename: file?.name || null,
         subject,
         title,
+        branch,
         data,
         driveLink,
         added: Date.now()
@@ -1084,6 +1097,7 @@ renderGlobalLinks();
     }
   };
 });
+
 
 
 
