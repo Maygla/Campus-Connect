@@ -391,3 +391,65 @@ svg#campusMap{width:100%;height:420px;display:block}
 }
 
 
+/* ===== Notes Filter Section ===== */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 14px;
+  margin: 15px 0 20px;
+  background: var(--card, #f8f9fa);
+  padding: 14px 18px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.filters label {
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted, #333);
+}
+
+.filters select {
+  margin-top: 6px;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: #fff;
+  cursor: pointer;
+  min-width: 200px;
+  transition: all 0.2s ease;
+}
+
+/* Filter Button */
+
+
+.filters button:hover {
+  /* background: #1f5ed7; */
+  transform: translateY(-8px);
+  box-shadow: 0 4px 10px rgba(43,124,255,0.25);
+}
+
+/* Responsive for smaller screens */
+@media (max-width: 600px) {
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .filters label {
+    width: 100%;
+  }
+  .filters select {
+    width: 100%;
+  }
+  .filters button {
+    width: 100%;
+    margin-top: 10px;
+  }
+}
+  
+
+
