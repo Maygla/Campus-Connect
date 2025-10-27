@@ -201,13 +201,25 @@ renderGlobalLinks();
   const uploadForm = document.getElementById('uploadForm');
   const sampleNotesBtn = document.getElementById('importSampleNotes');
   
-  async function renderNotes() {
+    async function renderNotes() {
     const selectedSubject = document.getElementById('notesSubjectFilter')?.value || '';
     const selectedBranch = document.getElementById('notesBranchFilter')?.value || '';
 
     if (hasDB) {
       let notes = await window.CCDB.listNotes();
-      
+
+      // Extract all subjects (for filter dropdown)
+      const subjectSet = new Set(notes.map(n => n.subject).filter(Boolean));
+      const subjectFilter = document.getElementById('notesSubjectFilter');
+      if (subjectFilter && subjectFilter.options.length <= 1) {
+        subjectSet.forEach(subj => {
+          const opt = document.createElement('option');
+          opt.value = subj;
+          opt.textContent = subj;
+          subjectFilter.appendChild(opt);
+        });
+      }
+
       // Apply filters
       notes = notes.filter(note => {
         const matchesSubject = !selectedSubject || note.subject === selectedSubject;
@@ -215,40 +227,72 @@ renderGlobalLinks();
         return matchesSubject && matchesBranch;
       });
 
+      // Sort alphabetically by subject, then title
+      notes.sort((a, b) => {
+        const sA = (a.subject || '').toLowerCase();
+        const sB = (b.subject || '').toLowerCase();
+        if (sA < sB) return -1;
+        if (sA > sB) return 1;
+        return (a.title || '').localeCompare(b.title || '');
+      });
+
       if (!notes.length) {
         notesListEl.innerHTML = `<div class="item">No notes found matching the selected filters.</div>`;
         return;
       }
+
       notesListEl.innerHTML = notes.map((n) => `
         <div class="item">
-          <strong>${escapeHtml(n.title)}</strong> <small>(${escapeHtml(n.subject || '')})</small>
+          <strong>${escapeHtml(n.title)}</strong> 
+          <small>(${escapeHtml(n.subject || '')}, ${escapeHtml(n.branch || '')})</small>
           <div class="muted">${n.createdAt && n.createdAt.toDate ? n.createdAt.toDate().toLocaleString() : ''}</div>
           <div class="row" style="margin-top:8px">
-            ${n.url ? `<a class="btn-download" data-id="${n.id}" href="${n.url}" target="_blank"><button>Download</button></a>` : ''}
+            ${n.url ? `<a href="${n.url}" target="_blank"><button>Download</button></a>` : ''}
             ${n.driveLink ? `<a href="${escapeHtml(n.driveLink)}" target="_blank"><button>Open Drive Link</button></a>` : ''}
             ${isAdmin() ? `<button data-delete="${n.id}" style="background:#ef4444">Delete</button>` : ''}
           </div>
         </div>
       `).join('');
 
-      // wire delete
+      // Delete button
       notesListEl.querySelectorAll('button[data-delete]').forEach(btn => {
         btn.addEventListener('click', async () => {
           if (!confirm('Delete this note?')) return;
-          const id = btn.dataset.delete;
-          await window.CCDB.deleteNote(id);
+          await window.CCDB.deleteNote(btn.dataset.delete);
           renderNotes();
         });
       });
+
     } else {
-      const notes = lsLoad(NOTES_KEY);
-      if (!notes.length) {
-        notesListEl.innerHTML = `<div class="item">No notes yet. Upload using the form above.</div>`;
+      // Fallback (localStorage)
+      const notes = lsLoad(NOTES_KEY) || [];
+
+      const subjectSet = new Set(notes.map(n => n.subject).filter(Boolean));
+      const subjectFilter = document.getElementById('notesSubjectFilter');
+      if (subjectFilter && subjectFilter.options.length <= 1) {
+        subjectSet.forEach(subj => {
+          const opt = document.createElement('option');
+          opt.value = subj;
+          opt.textContent = subj;
+          subjectFilter.appendChild(opt);
+        });
+      }
+
+      const filtered = notes.filter(note => {
+        const matchesSubject = !selectedSubject || note.subject === selectedSubject;
+        const matchesBranch = !selectedBranch || note.branch === selectedBranch;
+        return matchesSubject && matchesBranch;
+      }).sort((a, b) => (a.subject || '').localeCompare(b.subject || ''));
+
+      if (!filtered.length) {
+        notesListEl.innerHTML = `<div class="item">No notes found matching the selected filters.</div>`;
         return;
       }
-      notesListEl.innerHTML = notes.map((n, idx) => `
+
+      notesListEl.innerHTML = filtered.map((n, idx) => `
         <div class="item">
-          <strong>${escapeHtml(n.title)}</strong> <small>(${escapeHtml(n.subject)})</small>
+          <strong>${escapeHtml(n.title)}</strong> 
+          <small>(${escapeHtml(n.subject || '')}, ${escapeHtml(n.branch || '')})</small>
           <div class="muted">${new Date(n.added).toLocaleString()}</div>
           <div class="row" style="margin-top:8px">
             ${n.data ? `<button data-download="${idx}">Download</button>` : ''}
@@ -257,124 +301,16 @@ renderGlobalLinks();
           </div>
         </div>
       `).join('');
-      // wire download/delete (fallback)
-      notesListEl.querySelectorAll('button[data-download]').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const idx = Number(btn.dataset.download);
-          const note = lsLoad(NOTES_KEY)[idx];
-          if (!note) return;
-          const link = document.createElement('a');
-          link.href = note.data;
-          link.download = note.filename || `note_${idx}`;
-          document.body.appendChild(link);
-          link.click(); link.remove();
-        });
-      });
-      notesListEl.querySelectorAll('button[data-delete]').forEach(btn => {
-        btn.addEventListener('click', () => {
-          if (!confirm('Delete this note?')) return;
-          const idx = Number(btn.dataset.delete);
-          const arr = lsLoad(NOTES_KEY);
-          arr.splice(idx, 1);
-          lsSave(NOTES_KEY, arr);
-          renderNotes();
-        });
-      });
     }
   }
-  
-  uploadForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const subject = document.getElementById('noteSubject').value.trim();
-    const title = document.getElementById('noteTitle').value.trim();
-    const fileInput = document.getElementById('noteFile');
-    const driveLink = document.getElementById('noteDriveLink').value.trim();
-    const branch = document.getElementById('noteBranch').value.trim();
-    const file = fileInput.files?.[0];
-  
-    if (!file && !driveLink) {
-      alert('Please upload a file or provide a Drive link.');
-      return;
-    }
-  
-    if (hasDB) {
-      const owner = (window.CCAuth && window.CCAuth.currentUser) ? window.CCAuth.currentUser() : null;
-      try {
-        await window.CCDB.uploadNote({ file, subject, title, branch, owner, driveLink });
-        uploadForm.reset();
-        renderNotes();
-      } catch (err) {
-        alert('Upload failed: ' + (err.message || err));
-        console.error(err);
-      }
-    } else {
-      const data = file ? await readFileAsDataURL(file) : null;
-      const arr = lsLoad(NOTES_KEY);
-      arr.unshift({
-        filename: file?.name || null,
-        subject,
-        title,
-        branch,
-        data,
-        driveLink,
-        added: Date.now()
-      });
-      lsSave(NOTES_KEY, arr);
-      uploadForm.reset();
-      renderNotes();
-    }
+  document.getElementById('notesSubjectFilter')?.addEventListener('change', renderNotes);
+  document.getElementById('notesBranchFilter')?.addEventListener('change', renderNotes);
+  document.getElementById('clearNotesFilters')?.addEventListener('click', () => {
+    document.getElementById('notesSubjectFilter').value = '';
+    document.getElementById('notesBranchFilter').value = '';
+    renderNotes();
   });
-  
-  sampleNotesBtn.addEventListener('click', async () => {
-    if (hasDB) {
-      const blob1 = new Blob(["Sample note content (DSA)"], { type: 'text/plain' });
-      const file1 = new File([blob1], 'DSA-lecture1.txt');
-      const blob2 = new Blob(["Sample note content (Math)"], { type: 'text/plain' });
-      const file2 = new File([blob2], 'Math-Discrete.txt');
-      try {
-        await window.CCDB.uploadNote({ file: file1, subject: 'Data Structures', title: 'Lecture 1 - Intro' });
-        await window.CCDB.uploadNote({ file: file2, subject: 'Mathematics', title: 'Discrete Math Notes' });
-        renderNotes();
-      } catch (e) {
-        console.error(e);
-        alert('Import sample failed');
-      }
-    } else {
-      const sample = [
-        {
-          filename: 'DSA-lecture1.pdf',
-          subject: 'Data Structures',
-          title: 'Lecture 1 - Intro',
-          added: Date.now() - 86400000,
-          data: samplePDFDataURL()
-        },
-        {
-          filename: 'Math-Discrete.pdf',
-          subject: 'Mathematics',
-          title: 'Discrete Math Notes',
-          added: Date.now() - 43200000,
-          data: samplePDFDataURL()
-        }
-      ];
-      lsSave(NOTES_KEY, sample.concat(lsLoad(NOTES_KEY)));
-      renderNotes();
-    }
-  });
-  
-  function readFileAsDataURL(file) {
-    return new Promise((res, rej) => {
-      const r = new FileReader();
-      r.onload = () => res(r.result);
-      r.onerror = rej;
-      r.readAsDataURL(file);
-    });
-  }
-  
-  function samplePDFDataURL() {
-    const txt = "Sample note content - replace with real PDF/Docs in production.";
-    return 'data:text/plain;base64,' + btoa(txt);
-  }
-  
+                                            
   renderNotes();
 
   /* ========= Discussion Forum ========= */
@@ -1097,6 +1033,7 @@ renderGlobalLinks();
     }
   };
 });
+
 
 
 
