@@ -313,57 +313,17 @@ renderGlobalLinks();
                                             
   renderNotes();
 
-  /* ========= Discussion Forum ========= */
+    /* ========= Discussion Forum ========= */
   const postsEl = document.getElementById('posts');
   const postForm = document.getElementById('postForm');
 
   async function renderPosts() {
-    if (hasDB) {
-      const posts = await window.CCDB.listPosts();
-      if (!posts.length) { postsEl.innerHTML = `<div class="item">No posts yet. Start a conversation!</div>`; return; }
-      postsEl.innerHTML = posts.map(p => {
-        const currentUser = window.CCAuth?.currentUser?.();
-        const isOwner = currentUser && p.author && (p.author.uid === currentUser.uid);
-        const canDelete = isAdmin() || isOwner;
-
-        return `
-          <div class="item">
-            <strong>${escapeHtml(p.topic)}</strong> • <small>${escapeHtml(p.author?.name || p.author || 'Anonymous')}</small>
-            <div class="muted">${p.createdAt && p.createdAt.toDate ? p.createdAt.toDate().toLocaleString() : ''}</div>
-            <p>${escapeHtml(p.content)}</p>
-            <div class="row">
-              <button data-reply="${p.id}">Reply</button>
-              ${canDelete ? `<button data-delete="${p.id}" style="background:#ef4444">Delete</button>` : ''}
-            </div>
-            <div class="replies" style="margin-top:8px">
-              ${(p.replies || []).map(r => `
-                <div class="item">
-                  <small>${escapeHtml(r.author)}:</small> ${escapeHtml(r.text)}
-                </div>`).join('')}
-            </div>
-          </div>
-        `;
-      }).join('');
-      postsEl.querySelectorAll('button[data-reply]').forEach(b => {
-        b.addEventListener('click', async () => {
-          const id = b.dataset.reply;
-          const name = prompt('Your name') || 'Anonymous';
-          const text = prompt('Reply text:');
-          if (!text) return;
-          await window.CCDB.replyToPost(id, { author: name, text });
-          renderPosts();
-        });
-      });
-      postsEl.querySelectorAll('button[data-delete]').forEach(b => {
-        b.addEventListener('click', async () => {
-          if (!confirm('Delete this post?')) return;
-          await window.CCDB.deletePost(b.dataset.delete);
-          renderPosts();
-        });
-      });
-    } else {
+    if (!hasDB) {
       const posts = lsLoad(POSTS_KEY);
-      if (posts.length === 0) { postsEl.innerHTML = `<div class="item">No posts yet. Start a conversation!</div>`; return; }
+      if (!posts.length) {
+        postsEl.innerHTML = `<div class="item">No posts yet. Start a conversation!</div>`;
+        return;
+      }
       postsEl.innerHTML = posts.map((p, idx) => `
         <div class="item">
           <strong>${escapeHtml(p.topic)}</strong> • <small>${escapeHtml(p.author)}</small>
@@ -375,18 +335,138 @@ renderGlobalLinks();
           </div>
         </div>
       `).join('');
-      // local reply/delete handlers (omitted to keep fallback simple)
+      return;
     }
+
+    // Firestore-based posts
+    const posts = await window.CCDB.listPosts();
+    const currentUser = window.CCAuth?.currentUser?.();
+
+    if (!posts.length) {
+      postsEl.innerHTML = `<div class="item">No posts yet. Start a conversation!</div>`;
+      return;
+    }
+
+    postsEl.innerHTML = posts.map(p => {
+      const isOwner = currentUser && p.author?.uid === currentUser.uid;
+      const canDeletePost = isAdmin() || isOwner;
+
+      // replies UI
+      const repliesHtml = (p.replies || []).map(r => {
+        const replyIsOwner = currentUser && r.author?.uid === currentUser.uid;
+        const canDeleteReply = isAdmin() || replyIsOwner;
+        const replyTime = r.createdAt?.toDate
+          ? r.createdAt.toDate().toLocaleString()
+          : new Date(r.createdAt).toLocaleString();
+
+        return `
+          <div class="item reply" style="margin-left:25px; border-left:2px solid #ddd; padding-left:8px; margin-top:6px;">
+            <small><b>${escapeHtml(r.author?.name || r.author || "Anonymous")}</b></small>
+            <div class="muted" style="font-size:0.8em">${replyTime}</div>
+            <p>${escapeHtml(r.text)}</p>
+            ${canDeleteReply
+              ? `<button data-delreply="${p.id}" data-replyid="${r.id}" style="background:#f87171;padding:3px 8px;border:none;border-radius:6px;color:white;">Delete Reply</button>`
+              : ''}
+          </div>
+        `;
+      }).join('');
+
+      const createdTime = p.createdAt?.toDate
+        ? p.createdAt.toDate().toLocaleString()
+        : new Date(p.createdAt).toLocaleString();
+
+      return `
+        <div class="item post" style="margin-bottom:12px;">
+          <strong>${escapeHtml(p.topic)}</strong> • <small>${escapeHtml(p.author?.name || p.author || 'Anonymous')}</small>
+          <div class="muted">${createdTime}</div>
+          <p>${escapeHtml(p.content)}</p>
+          <div class="row">
+            <button data-reply="${p.id}">Reply</button>
+            ${canDeletePost
+              ? `<button data-delete="${p.id}" style="background:#ef4444;color:white;">Delete Post</button>`
+              : ''}
+          </div>
+          <div class="replies">${repliesHtml}</div>
+        </div>
+      `;
+    }).join('');
+
+    // === Reply button logic ===
+    postsEl.querySelectorAll('button[data-reply]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const postId = btn.dataset.reply;
+        const user = window.CCAuth?.currentUser?.();
+        const name = user ? (user.name || user.email) : (prompt("Your name") || "Anonymous");
+        const text = prompt("Write your reply:");
+        if (!text) return;
+
+        await window.CCDB.replyToPost(postId, {
+          author: user ? { uid: user.uid, name } : name,
+          text
+        });
+        renderPosts();
+      });
+    });
+
+    // === Post delete logic (admin or owner only) ===
+    postsEl.querySelectorAll('button[data-delete]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const postId = btn.dataset.delete;
+        const post = posts.find(p => p.id === postId);
+        const user = window.CCAuth?.currentUser?.();
+        const isOwner = user && post?.author?.uid === user.uid;
+
+        if (!isAdmin() && !isOwner) {
+          alert("You can only delete your own post.");
+          return;
+        }
+
+        if (!confirm("Delete this post?")) return;
+        await window.CCDB.deletePost(postId);
+        renderPosts();
+      });
+    });
+
+    // === Reply delete logic ===
+    postsEl.querySelectorAll('button[data-delreply]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const postId = btn.dataset.delreply;
+        const replyId = btn.dataset.replyid;
+        const user = window.CCAuth?.currentUser?.();
+
+        const post = posts.find(p => p.id === postId);
+        if (!post) return;
+
+        const reply = (post.replies || []).find(r => r.id === replyId);
+        const isOwner = user && reply?.author?.uid === user.uid;
+
+        if (!isAdmin() && !isOwner) {
+          alert("You can only delete your own reply.");
+          return;
+        }
+
+        if (!confirm("Delete this reply?")) return;
+
+        // remove reply from Firestore
+        const updatedReplies = (post.replies || []).filter(r => r.id !== replyId);
+        const docRef = doc(window.CCDB._internal.db, "posts", postId);
+        await updateDoc(docRef, { replies: updatedReplies });
+        renderPosts();
+      });
+    });
   }
 
+  // === Post form submit ===
   postForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const authorName = document.getElementById('postAuthor').value.trim();
     const topic = document.getElementById('postTopic').value.trim();
     const content = document.getElementById('postContent').value.trim();
 
+    if (!topic || !content) return alert('Please fill in all fields.');
+
     if (hasDB) {
-      const owner = (window.CCAuth && window.CCAuth.currentUser) ? window.CCAuth.currentUser() : null;
+      const owner = window.CCAuth?.currentUser?.();
       const author = owner ? { uid: owner.uid, name: owner.name || owner.email } : authorName || 'Anonymous';
       await window.CCDB.createPost({ author, topic, content });
       postForm.reset();
@@ -400,30 +480,31 @@ renderGlobalLinks();
     }
   });
 
+  // === Clear all forum (admin only) ===
   document.getElementById('clearForumBtn').addEventListener('click', async () => {
-    if (!isAdmin()) { alert('Only admin can clear all posts.'); return; }
+    if (!isAdmin()) return alert('Only admin can clear all posts.');
     if (!confirm('Clear entire forum?')) return;
+
     if (hasDB) {
       const posts = await window.CCDB.listPosts();
       await Promise.all(posts.map(p => window.CCDB.deletePost(p.id)));
-      renderPosts();
     } else {
       lsSave(POSTS_KEY, []);
-      renderPosts();
     }
+
+    renderPosts();
   });
 
+  // Initial load
   renderPosts();
+
   // Hide or show the Clear Forum button depending on admin access
   setTimeout(() => {
     const clearBtn = document.getElementById('clearForumBtn');
     if (!clearBtn) return;
-    if (!isAdmin()) {
-      clearBtn.style.display = 'none';
-    } else {
-      clearBtn.style.display = 'inline-block';
-    }
+    clearBtn.style.display = isAdmin() ? 'inline-block' : 'none';
   }, 1000);
+
 
     /* ========= News ========= */
   const newsList = document.getElementById('newsList');
@@ -1044,6 +1125,7 @@ renderGlobalLinks();
     }
   };
 });
+
 
 
 
