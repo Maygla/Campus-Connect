@@ -321,18 +321,29 @@ renderGlobalLinks();
     if (hasDB) {
       const posts = await window.CCDB.listPosts();
       if (!posts.length) { postsEl.innerHTML = `<div class="item">No posts yet. Start a conversation!</div>`; return; }
-      postsEl.innerHTML = posts.map(p => `
-        <div class="item">
-          <strong>${escapeHtml(p.topic)}</strong> • <small>${escapeHtml(p.author?.name || p.author || 'Anonymous')}</small>
-          <div class="muted">${p.createdAt && p.createdAt.toDate ? p.createdAt.toDate().toLocaleString() : ''}</div>
-          <p>${escapeHtml(p.content)}</p>
-          <div class="row">
-            <button data-reply="${p.id}">Reply</button>
-            <button data-delete="${p.id}" style="background:#ef4444">Delete</button>
+      postsEl.innerHTML = posts.map(p => {
+        const currentUser = window.CCAuth?.currentUser?.();
+        const isOwner = currentUser && p.author && (p.author.uid === currentUser.uid);
+        const canDelete = isAdmin() || isOwner;
+
+        return `
+          <div class="item">
+            <strong>${escapeHtml(p.topic)}</strong> • <small>${escapeHtml(p.author?.name || p.author || 'Anonymous')}</small>
+            <div class="muted">${p.createdAt && p.createdAt.toDate ? p.createdAt.toDate().toLocaleString() : ''}</div>
+            <p>${escapeHtml(p.content)}</p>
+            <div class="row">
+              <button data-reply="${p.id}">Reply</button>
+              ${canDelete ? `<button data-delete="${p.id}" style="background:#ef4444">Delete</button>` : ''}
+            </div>
+            <div class="replies" style="margin-top:8px">
+              ${(p.replies || []).map(r => `
+                <div class="item">
+                  <small>${escapeHtml(r.author)}:</small> ${escapeHtml(r.text)}
+                </div>`).join('')}
+            </div>
           </div>
-          <div class="replies" style="margin-top:8px">${(p.replies||[]).map(r => `<div class="item"><small>${escapeHtml(r.author)}:</small> ${escapeHtml(r.text)}</div>`).join('')}</div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
       postsEl.querySelectorAll('button[data-reply]').forEach(b => {
         b.addEventListener('click', async () => {
           const id = b.dataset.reply;
@@ -1033,6 +1044,7 @@ renderGlobalLinks();
     }
   };
 });
+
 
 
 
